@@ -202,3 +202,23 @@ textarea,
 [data-admin-layout] .admin-card-light:hover {
   box-shadow: var(--shadow-style);
 }
+
+/* ===== View Transition 动画 ===== */
+/* Magic UI 主题切换动画 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* 深色模式切换时的覆盖层 */
+::view-transition-new(root) {
+  isolation: isolate;
+}
+
+/* 允许 View Transition 在所有元素上工作 */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 0.3s;
+}

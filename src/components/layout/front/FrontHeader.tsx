@@ -11,23 +11,28 @@ import {
   HiOutlineMenu,
   HiOutlineX,
   HiOutlineSearch,
+  HiOutlineHome,
+  HiOutlineDocumentText,
+  HiOutlineTag,
   HiOutlineUser
 } from 'react-icons/hi'
 import { cn } from '@/utils'
+import { AnimatedThemeToggle } from '@/components/ui/AnimatedThemeToggle'
 
 // 导航项类型
 interface NavItem {
   label: string
   href: string
+  icon?: React.ComponentType<{ className?: string }>
   children?: NavItem[]
 }
 
 // 默认导航配置
 const NAV_ITEMS: NavItem[] = [
-  { label: '首页', href: '/' },
-  { label: '文章', href: '/articles' },
-  { label: '分类', href: '/categories' },
-  { label: '关于', href: '/about' }
+  { label: '首页', href: '/', icon: HiOutlineHome },
+  { label: '文章', href: '/articles', icon: HiOutlineDocumentText },
+  { label: '分类', href: '/categories', icon: HiOutlineTag },
+  { label: '关于', href: '/about', icon: HiOutlineUser }
 ]
 
 // 滑动高亮导航项
@@ -38,15 +43,17 @@ interface SlidingNavItemProps {
 }
 
 function SlidingNavItem({ item, isActive, onClick }: SlidingNavItemProps) {
+  const Icon = item.icon
   return (
     <Link
       to={item.href}
       onClick={onClick}
       className={cn(
-        'relative px-4 py-2 text-sm font-medium transition-colors',
+        'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors',
         isActive ? 'text-primary' : 'text-default-600 hover:text-default-900'
       )}
     >
+      {Icon && <Icon className="text-base" />}
       {item.label}
     </Link>
   )
@@ -96,9 +103,10 @@ export default function FrontHeader({
     if (targetButton) {
       const navRect = navRef.current.getBoundingClientRect()
       const btnRect = targetButton.getBoundingClientRect()
+      // 调整指示器位置，增加边距使其比文字稍长
       setIndicatorStyle({
-        left: btnRect.left - navRect.left,
-        width: btnRect.width
+        left: btnRect.left - navRect.left - 6,
+        width: btnRect.width + 12
       })
     }
   }, [])
@@ -139,7 +147,7 @@ export default function FrontHeader({
             to="/"
             className="flex items-center gap-2 text-xl font-bold text-default-900"
           >
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-default-900">
               {logoText}
             </span>
           </Link>
@@ -152,7 +160,7 @@ export default function FrontHeader({
           >
             {/* 滑动指示器 */}
             <motion.div
-              className="absolute bottom-0 h-0.5 bg-primary rounded-full"
+              className="absolute -bottom-1 h-0.5 bg-primary rounded-full"
               initial={false}
               animate={{
                 left: indicatorStyle.left,
@@ -189,34 +197,19 @@ export default function FrontHeader({
               </Button>
             )}
 
-            {/* 用户按钮 */}
+            {/* 主题切换按钮 */}
+            <AnimatedThemeToggle className="hidden md:flex" />
+
+            {/* 登录按钮 */}
             <Button
               variant="light"
-              isIconOnly
+              size="sm"
+              as={Link}
+              to="/login"
               className="hidden md:flex"
             >
-              <HiOutlineUser className="text-lg" />
+              登录
             </Button>
-
-            {/* 登录/注册按钮 */}
-            <div className="hidden md:flex items-center gap-2">
-              <Button
-                variant="light"
-                size="sm"
-                as={Link}
-                to="/login"
-              >
-                登录
-              </Button>
-              <Button
-                color="primary"
-                size="sm"
-                as={Link}
-                to="/register"
-              >
-                注册
-              </Button>
-            </div>
 
             {/* 移动端菜单按钮 */}
             <Button
@@ -247,24 +240,28 @@ export default function FrontHeader({
           >
             <nav className="container mx-auto px-4 py-4">
               <div className="flex flex-col gap-1">
-                {navItems.map((item, index) => (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => handleNavClick(index)}
-                    className={cn(
-                      'px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-                      activeIndex === index
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-default-600 hover:bg-default-100'
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {navItems.map((item, index) => {
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => handleNavClick(index)}
+                      className={cn(
+                        'px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
+                        activeIndex === index
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-default-600 hover:bg-default-100'
+                      )}
+                    >
+                      {Icon && <Icon className="text-base" />}
+                      {item.label}
+                    </Link>
+                  )
+                })}
               </div>
 
-              <div className="mt-4 pt-4 border-t border-divider flex flex-col gap-2">
+              <div className="mt-4 pt-4 border-t border-divider">
                 <Button
                   variant="flat"
                   fullWidth
@@ -273,15 +270,6 @@ export default function FrontHeader({
                   onPress={() => setMobileMenuOpen(false)}
                 >
                   登录
-                </Button>
-                <Button
-                  color="primary"
-                  fullWidth
-                  as={Link}
-                  to="/register"
-                  onPress={() => setMobileMenuOpen(false)}
-                >
-                  注册
                 </Button>
               </div>
             </nav>

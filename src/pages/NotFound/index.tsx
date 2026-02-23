@@ -206,14 +206,10 @@ export default function NotFoundPage() {
       {/* 主要内容 */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-4">
         {/* 404 - 故障艺术效果 */}
-        <div className="relative">
-          <GlitchText
-            text="404"
-            className="text-[10rem] md:text-[18rem] font-black font-mono tracking-tighter leading-none"
-          />
-          {/* 装饰性边框 */}
-          <div className="absolute -inset-4 border-2 border-[#00ff88]/30 -z-10" />
-        </div>
+        <GlitchText
+          text="404"
+          className="text-[10rem] md:text-[18rem] font-black font-mono tracking-tighter leading-none"
+        />
 
         {/* 错误信息 */}
         <div className="text-center space-y-2">
@@ -235,15 +231,16 @@ export default function NotFoundPage() {
         {/* 分割线 */}
         <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-[#00ff88]/30 to-transparent" />
 
-        {/* 返回按钮 - 科技风 */}
+        {/* 返回按钮 - 简约白 */}
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
             as={Link}
             to="/"
             size="lg"
-            className="font-mono text-sm bg-[#00ff88]/10 border border-[#00ff88]/50 text-[#00ff88] hover:bg-[#00ff88]/20 hover:border-[#00ff88] transition-all duration-300"
+            variant="bordered"
+            className="font-mono text-sm border-white/30 text-white/80 hover:bg-white/10 hover:border-white/50 transition-all duration-300"
           >
-            <span className="mr-2">▶</span>
+            <span className="mr-2">←</span>
             返回首页
           </Button>
         </motion.div>
