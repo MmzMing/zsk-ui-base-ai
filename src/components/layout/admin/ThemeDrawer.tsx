@@ -319,26 +319,9 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               <HiOutlineAdjustments className="text-lg" />
               布局设置
             </h3>
-            {/* 多标签页按钮 */}
-            <div className="mb-3">
-              <button
-                className={cn(
-                  'w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all',
-                  getButtonClass(multiTab)
-                )}
-                onClick={() => useAppStore.getState().updateSettings({ multiTab: !multiTab })}
-              >
-                <span className="flex items-center gap-2">
-                  <HiOutlineViewList className="text-lg" />
-                  <span className="text-sm">多标签页</span>
-                </span>
-                <span className="text-xs opacity-60">
-                  {multiTab ? '已开启' : '已关闭'}
-                </span>
-              </button>
-            </div>
             <div className="flex flex-col gap-2">
               {[
+                { key: 'multiTab', value: multiTab, label: '多标签页' },
                 { key: 'showBreadcrumb', value: showBreadcrumb, label: '面包屑导航' },
                 { key: 'sidebarAccordion', value: sidebarAccordion, label: '侧边栏手风琴' },
                 { key: 'enableBorder', value: enableBorder, label: '启用边框' },
