@@ -1,0 +1,204 @@
+@import "tailwindcss";
+@import "./light.css";
+@import "./dark.css";
+
+@plugin './hero.ts';
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+/* ===== Tailwind v4 主题变量覆盖 ===== */
+/* 让 Tailwind 的 text-* 类使用动态字体大小 */
+@theme inline {
+  --text-xs: calc(var(--theme-font-size, 14px) * 0.75);
+  --text-sm: calc(var(--theme-font-size, 14px) * 0.875);
+  --text-base: var(--theme-font-size, 14px);
+  --text-lg: calc(var(--theme-font-size, 14px) * 1.125);
+  --text-xl: calc(var(--theme-font-size, 14px) * 1.25);
+  --text-2xl: calc(var(--theme-font-size, 14px) * 1.5);
+  --text-3xl: calc(var(--theme-font-size, 14px) * 1.875);
+  --text-4xl: calc(var(--theme-font-size, 14px) * 2.25);
+  --text-5xl: calc(var(--theme-font-size, 14px) * 3);
+  --text-6xl: calc(var(--theme-font-size, 14px) * 3.75);
+  --text-7xl: calc(var(--theme-font-size, 14px) * 4.5);
+  --text-8xl: calc(var(--theme-font-size, 14px) * 6);
+  --text-9xl: calc(var(--theme-font-size, 14px) * 8);
+}
+
+/**
+ * 全局样式 - 包含重置样式和通用样式
+ */
+
+/* ===== CSS重置 ===== */
+/* Tailwind CSS 已经包含了重置样式，这里不需要重复 */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  line-height: 1.5;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  overflow-x: hidden;
+}
+
+/* ===== 滚动条样式 ===== */
+/* 全局滚动条设置 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-hover);
+}
+
+/* Firefox滚动条 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar) transparent;
+}
+
+/* ===== HeroUI Tabs 滚动条隐藏 ===== */
+/* 隐藏 Tabs 组件的滚动条 */
+div[data-slot="tab-list"]::-webkit-scrollbar,
+div[data-slot="list"]::-webkit-scrollbar,
+div[data-slot="base"] .overflow-x-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+[role="tablist"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+div[data-slot="tab-list"],
+div[data-slot="list"],
+div[data-slot="base"] .overflow-x-auto,
+.overflow-x-auto,
+[role="tablist"] {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* ===== 组件内容溢出修复 ===== */
+/* 确保 Chip, Code, Input, Tabs 内容有适当的内边距并自动扩展 */
+[data-slot="chip"],
+[data-slot="code"],
+[data-slot="input-wrapper"],
+[data-slot="tab-content"] {
+  box-sizing: border-box;
+}
+
+
+/* ===== 链接样式 ===== */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-duration) var(--transition-timing);
+}
+
+a:hover {
+  color: var(--color-primary-600);
+}
+
+
+
+/* ===== 图片响应式 ===== */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===== 标题样式 ===== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-foreground);
+}
+
+
+/* ===== 动态主题变量 ===== */
+/* 全局字体大小 - 由主题设置控制 */
+html {
+  --theme-font-size: 14px;
+  --theme-border-radius: 12px;
+}
+
+/* 应用字体大小 */
+body {
+  font-size: var(--theme-font-size, var(--font-size, 14px));
+}
+
+/* 应用全局圆角到常见组件 */
+.rounded-theme,
+.card,
+.btn,
+button,
+input,
+select,
+textarea,
+[data-slot="button"],
+[data-slot="card"],
+[data-slot="input"],
+[data-slot="select"],
+[data-slot="textarea"],
+[data-slot="modal"],
+[data-slot="drawer"],
+[data-slot="popover"],
+[data-slot="dropdown"],
+[data-slot="menu"],
+[data-slot="menu-trigger"] {
+  border-radius: var(--theme-border-radius, var(--border-radius, 12px));
+}
+
+/* ===== 后台管理边框样式 ===== */
+/* 仅在后台布局中应用边框 */
+[data-admin-layout] .admin-border {
+  border: var(--border-style);
+}
+
+/* ===== 后台管理阴影样式 ===== */
+/* 仅在后台布局中应用阴影 */
+[data-admin-layout] .admin-shadow {
+  box-shadow: var(--shadow-style);
+}
+
+/* ===== 后台管理通用容器样式 ===== */
+[data-admin-layout] .admin-card {
+  border: var(--border-style);
+  border-radius: var(--theme-border-radius, var(--border-radius, 12px));
+  box-shadow: var(--shadow-style);
+}
+
+[data-admin-layout] .admin-card-light {
+  border: var(--border-style);
+  border-radius: var(--theme-border-radius, var(--border-radius, 12px));
+  box-shadow: var(--shadow-style);
+  transition: box-shadow 0.3s ease;
+}
+
+[data-admin-layout] .admin-card-light:hover {
+  box-shadow: var(--shadow-style);
+}
