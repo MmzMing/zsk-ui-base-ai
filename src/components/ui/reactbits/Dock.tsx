@@ -14,6 +14,7 @@ import {
   AnimatePresence
 } from 'framer-motion'
 import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react'
+import { useTheme } from '@/hooks/useTheme'
 
 // Dock 项目数据类型
 export type DockItemData = {
@@ -21,6 +22,8 @@ export type DockItemData = {
   label: React.ReactNode
   onClick: () => void
   className?: string
+  /** 是否显示圆形背景 */
+  noCircle?: boolean
 }
 
 // Dock 组件属性
@@ -78,8 +81,9 @@ function DockItem({
   spring,
   distance,
   magnification,
-  baseItemSize
-}: DockItemProps) {
+  baseItemSize,
+  noCircle = false
+}: DockItemProps & { noCircle?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const isHovered = useMotionValue(0)
 
@@ -93,6 +97,15 @@ function DockItem({
 
   const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize])
   const size = useSpring(targetSize, spring)
+  const { actualTheme } = useTheme()
+  const isDark = actualTheme === 'dark'
+  const itemBg = isDark ? 'bg-[#060010]' : 'bg-white'
+  const itemBorder = isDark ? 'border-neutral-600' : 'border-neutral-200'
+
+  // 根据 noCircle 决定是否显示圆形背景
+  const containerClass = noCircle
+    ? `relative inline-flex items-center justify-center cursor-pointer ${className}`
+    : `relative inline-flex items-center justify-center rounded-full border-2 shadow-md cursor-pointer ${itemBg} ${itemBorder} ${className}`
 
   return (
     <motion.div
@@ -106,7 +119,7 @@ function DockItem({
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center rounded-full bg-[#060010] border-neutral-700 border-2 shadow-md cursor-pointer ${className}`}
+      className={containerClass}
       tabIndex={0}
       role="button"
       aria-haspopup="true"
@@ -123,6 +136,11 @@ function DockItem({
 // DockLabel 子组件
 function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const { actualTheme } = useTheme()
+  const isDark = actualTheme === 'dark'
+  const labelBg = isDark ? 'bg-[#060010]' : 'bg-white'
+  const labelText = isDark ? 'text-white' : 'text-neutral-800'
+  const labelBorder = isDark ? 'border-neutral-600' : 'border-neutral-200'
 
   useEffect(() => {
     if (!isHovered) return
@@ -140,7 +158,7 @@ function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
           animate={{ opacity: 1, y: -10 }}
           exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.2 }}
-          className={`${className} absolute -top-6 left-1/2 w-fit whitespace-pre rounded-md border border-neutral-700 bg-[#060010] px-2 py-0.5 text-xs text-white`}
+          className={`${className} absolute -top-6 left-1/2 w-fit whitespace-pre rounded-md border px-2 py-0.5 text-xs ${labelBg} ${labelText} ${labelBorder}`}
           role="tooltip"
           style={{ x: '-50%' }}
         >
@@ -170,6 +188,14 @@ export default function Dock({
   const mouseX = useMotionValue(Infinity)
   const isHovered = useMotionValue(0)
 
+  // 使用 HeroUI 的语义颜色，与主题抽屉保持一致
+  const dockBg = 'bg-content1'
+  const dockBorder = 'border-divider'
+
+
+
+
+
   const maxHeight = useMemo(() => Math.max(dockHeight, magnification + magnification / 2 + 4), [magnification, dockHeight])
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight])
   const height = useSpring(heightRow, spring)
@@ -185,7 +211,7 @@ export default function Dock({
           isHovered.set(0)
           mouseX.set(Infinity)
         }}
-        className={`${className} absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-end w-fit gap-4 rounded-2xl border-neutral-700 border-2 pb-2 px-4`}
+        className={`${className} absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-end w-fit gap-4 rounded-2xl border-2 pb-2 px-4 backdrop-blur-md ${dockBg} ${dockBorder}`}
         style={{ height: panelHeight }}
         role="toolbar"
         aria-label="应用 Dock"
@@ -200,6 +226,7 @@ export default function Dock({
             distance={distance}
             magnification={magnification}
             baseItemSize={baseItemSize}
+            noCircle={item.noCircle}
           >
             <DockIcon>{item.icon}</DockIcon>
             <DockLabel>{item.label}</DockLabel>

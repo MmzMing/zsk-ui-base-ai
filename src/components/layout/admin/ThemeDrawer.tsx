@@ -43,6 +43,7 @@ const MENU_LAYOUTS: Array<{
   { value: 'vertical', icon: HiOutlineViewList, label: '垂直' },
   { value: 'horizontal', icon: HiOutlineMenuAlt3, label: '水平' },
   { value: 'mixed', icon: HiOutlineTemplate, label: '混合' },
+  { value: 'dual', icon: HiOutlineViewBoards, label: '双列' },
   { value: 'dock', icon: HiOutlineViewBoards, label: 'Dock' }
 ]
 
@@ -208,6 +209,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
             size="sm"
             onPress={handleReset}
             className={getResetButtonClass()}
+            aria-label="重置主题设置"
           >
             <HiOutlineRefresh className="text-lg" />
           </Button>
@@ -218,6 +220,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               size="sm"
               onPress={onClose}
               className={getCloseButtonClass()}
+              aria-label="关闭主题设置面板"
             >
               <HiOutlineX className="text-lg" />
             </Button>
@@ -275,6 +278,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   style={{ backgroundColor: color.value }}
                   onClick={() => setPrimaryColor(color.value)}
                   title={color.label}
+                  aria-label={`选择${color.label}主题色`}
                 />
               ))}
             </div>
@@ -388,6 +392,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               showSteps={false}
               showOutline
               classNames={getSliderClassNames()}
+              aria-label="菜单宽度"
             />
           </section>,
           6
@@ -408,6 +413,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               showSteps={false}
               showOutline
               classNames={getSliderClassNames()}
+              aria-label="全局圆角"
             />
           </section>,
           7
