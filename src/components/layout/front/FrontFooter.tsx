@@ -167,15 +167,11 @@ export default function FrontFooter({
                   href="mailto:contact@example.com"
                   className="flex items-center gap-3 text-sm text-default-600 hover:text-primary transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-default-100 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Mail className="w-4 h-4" />
-                  </div>
+                  <Mail className="w-5 h-5 text-default-400 group-hover:text-primary transition-colors" />
                   <span>contact@example.com</span>
                 </a>
                 <div className="flex items-center gap-3 text-sm text-default-600">
-                  <div className="w-8 h-8 rounded-lg bg-default-100 flex items-center justify-center">
-                    <MapPin className="w-4 h-4" />
-                  </div>
+                  <MapPin className="w-5 h-5 text-default-400" />
                   <span>中国 · 北京</span>
                 </div>
               </div>
@@ -218,9 +214,9 @@ export default function FrontFooter({
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-default-100 text-default-600 hover:bg-primary hover:text-white transition-colors"
+                  className="text-default-400 hover:text-primary transition-all"
                   title={social.label}
                 >
                   {social.icon}

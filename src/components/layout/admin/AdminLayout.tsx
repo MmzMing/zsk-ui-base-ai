@@ -11,6 +11,7 @@ import AdminSidebar from './AdminSidebar'
 import AdminHeader from './AdminHeader'
 import MultiTabs from './MultiTabs'
 import { useAppStore, type PageTransition } from '@/stores/app'
+import { ADMIN_MENUS, type MenuItem } from '@/constants/menu'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { cn } from '@/utils'
 import ClickSpark from '@/components/ui/reactbits/ClickSpark'
@@ -71,16 +72,47 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
     multiTab
   } = useAppStore()
 
+  const { isMobile } = useBreakpoint()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // 递归查找菜单项
+  const findMenuItem = useCallback((segment: string, path: string, menus: MenuItem[] = ADMIN_MENUS): MenuItem | undefined => {
+    for (const menu of menus) {
+      // 优先匹配完整路径，其次匹配 key
+      if (menu.path === path || menu.key === segment) return menu
+      if (menu.children) {
+        const found = findMenuItem(segment, path, menu.children)
+        if (found) return found
+      }
+    }
+    return undefined
+  }, [])
+
   // 根据路径生成面包屑
   const breadcrumbs = useMemo(() => {
     const pathSegments = location.pathname.split('/').filter(Boolean)
     if (pathSegments.length <= 1) return []
 
-    return pathSegments.slice(1).map((segment, index) => ({
-      label: segment.charAt(0).toUpperCase() + segment.slice(1),
-      path: index === pathSegments.length - 2 ? undefined : `/${pathSegments.slice(0, index + 2).join('/')}`
-    }))
-  }, [location.pathname])
+    const crumbs: { label: string; path?: string }[] = []
+    let currentPath = ''
+
+    // 从 /admin 后的第一个段开始处理
+    for (let i = 0; i < pathSegments.length; i++) {
+      const segment = pathSegments[i]
+      currentPath += `/${segment}`
+
+      // 只处理 /admin 之后的路径
+      if (i >= 1) {
+        const menuItem = findMenuItem(segment, currentPath)
+        crumbs.push({
+          label: menuItem?.label || segment.charAt(0).toUpperCase() + segment.slice(1),
+          path: i === pathSegments.length - 1 ? undefined : (menuItem?.path || undefined)
+        })
+      }
+    }
+
+    return crumbs
+  }, [location.pathname, findMenuItem])
 
   // 处理色弱模式
   useEffect(() => {
@@ -108,13 +140,6 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
 
   // 获取当前动画配置
   const currentTransition = pageTransitionVariants[pageTransition]
-  const { isMobile } = useBreakpoint()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  // 切换移动端侧边栏
-  const toggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev)
-  }, [])
 
   // 渲染内容区域
   const renderContent = () => (
@@ -177,8 +202,6 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
               {showHeader && (
                 <AdminHeader 
                   breadcrumbs={breadcrumbs} 
-                  onMenuToggle={toggleSidebar}
-                  showMobileMenuButton={isMobile}
                 />
               )}
 
@@ -199,7 +222,7 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
             className={cn('flex flex-col h-screen overflow-hidden bg-background', className)}
           >
             {/* 水平菜单头部 */}
-            <HorizontalMenu extra={<AdminHeader breadcrumbs={[]} onMenuToggle={() => {}} showMobileMenuButton={false} />} />
+            <HorizontalMenu extra={<AdminHeader breadcrumbs={[]} />} />
 
             {/* 主内容区 */}
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -215,7 +238,7 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
         return (
           <MixedMenu 
             className={className}
-            extra={<AdminHeader breadcrumbs={[]} onMenuToggle={() => {}} showMobileMenuButton={false} />}
+            extra={<AdminHeader breadcrumbs={[]} />}
           >
             <div className="flex-1 flex flex-col overflow-hidden">
               {multiTab && <MultiTabs />}
@@ -229,7 +252,7 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
         return (
           <DualMenu 
             className={className}
-            extra={<AdminHeader breadcrumbs={[]} onMenuToggle={() => {}} showMobileMenuButton={false} />}
+            extra={<AdminHeader breadcrumbs={[]} />}
           >
             <div className="flex-1 flex flex-col overflow-hidden">
               {multiTab && <MultiTabs />}

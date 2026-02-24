@@ -3,7 +3,7 @@
  * 支持折叠/展开、多级菜单
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Tooltip, ScrollShadow } from '@heroui/react'
@@ -179,7 +179,8 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
   const {
     sidebarCollapsed: collapsed,
     toggleSidebar,
-    menuWidth
+    menuWidth,
+    sidebarAccordion
   } = useAppStore()
 
   // 获取当前激活的菜单项
@@ -222,11 +223,37 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
       if (next.has(key)) {
         next.delete(key)
       } else {
+        // 如果开启了手风琴模式，先清空其他展开项
+        if (sidebarAccordion) {
+          next.clear()
+        }
         next.add(key)
       }
       return next
     })
-  }, [])
+  }, [sidebarAccordion])
+
+  // 手风琴模式切换时，自动收起多余项
+  useEffect(() => {
+    if (sidebarAccordion) {
+      setExpandedKeys(prev => {
+        if (prev.size <= 1) return prev
+        // 尝试保留包含当前激活子项的父级菜单
+        const next = new Set<string>()
+        for (const menu of ADMIN_MENUS) {
+          if (menu.children?.some(child => child.key === activeKey) && prev.has(menu.key)) {
+            next.add(menu.key)
+            break
+          }
+        }
+        // 如果没找到对应的激活父级，则保留原集合中第一个
+        if (next.size === 0 && prev.size > 0) {
+          next.add(Array.from(prev)[0])
+        }
+        return next
+      })
+    }
+  }, [sidebarAccordion, activeKey])
 
   // 处理菜单选择
   const handleSelect = useCallback((item: MenuItem) => {
@@ -263,10 +290,9 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
+              className="flex items-center"
             >
               <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-              <span className="font-semibold text-lg">知识库后台</span>
             </motion.div>
           )}
         </AnimatePresence>

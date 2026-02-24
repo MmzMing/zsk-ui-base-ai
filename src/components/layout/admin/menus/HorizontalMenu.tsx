@@ -78,20 +78,21 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
         >
           <DropdownTrigger>
             <Button
-              variant="light"
+              variant={isActive ? 'flat' : 'light'}
+              color={isActive ? 'primary' : 'default'}
               className={cn(
-                'h-11 px-4 gap-2',
-                isActive && 'bg-primary/10 text-primary'
+                'h-10 px-3 gap-2 min-w-0',
+                isActive && 'bg-primary/10 font-medium'
               )}
               endContent={
                 <HiOutlineChevronDown className={cn(
-                  'text-xs transition-transform',
+                  'text-xs transition-transform hidden xl:block',
                   isOpen && 'rotate-180'
                 )} />
               }
             >
-              {Icon && <Icon className="text-lg" />}
-              <span>{item.label}</span>
+              {Icon && <Icon className="text-lg flex-shrink-0" />}
+              <span className="hidden xl:inline truncate">{item.label}</span>
             </Button>
           </DropdownTrigger>
           <DropdownMenu
@@ -124,15 +125,16 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
     return (
       <Button
         key={item.key}
-        variant="light"
+        variant={isActive ? 'flat' : 'light'}
+        color={isActive ? 'primary' : 'default'}
         className={cn(
-          'h-11 px-4 gap-2',
-          isActive && 'bg-primary/10 text-primary'
+          'h-10 px-3 gap-2 min-w-0',
+          isActive && 'bg-primary/10 font-medium'
         )}
         onPress={() => item.path && handleSelect(item)}
       >
-        {Icon && <Icon className="text-lg" />}
-        <span>{item.label}</span>
+        {Icon && <Icon className="text-lg flex-shrink-0" />}
+        <span className="hidden xl:inline truncate">{item.label}</span>
       </Button>
     )
   }

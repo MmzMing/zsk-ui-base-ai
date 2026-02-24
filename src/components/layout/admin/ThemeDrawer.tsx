@@ -65,7 +65,7 @@ const overlayVariants = {
 
 // 背景层动画变体 - 交错滑入
 const backgroundLayerVariants = {
-  hidden: (_custom: number) => ({
+  hidden: () => ({
     x: '100%',
     opacity: 0,
     scale: 1,
@@ -162,13 +162,6 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
   const getSwitchClassNames = () => ({
     wrapper: actualTheme === 'dark' ? 'bg-white/20' : 'bg-gray-200',
     thumb: actualTheme === 'dark' ? 'bg-white' : 'bg-white'
-  })
-
-  // 根据主题模式获取滑块样式
-  const getSliderClassNames = () => ({
-    track: actualTheme === 'dark' ? 'bg-white/20' : 'bg-gray-200',
-    filler: actualTheme === 'dark' ? 'bg-white/60' : 'bg-gray-400',
-    thumb: actualTheme === 'dark' ? 'bg-white' : 'bg-gray-500'
   })
 
   // 重置设置
@@ -380,18 +373,19 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
         {/* 菜单宽度 */}
         {renderAnimatedSection(
           <section>
-            <h3 className="text-sm font-medium mb-3">
-              菜单宽度: {menuWidth}px
-            </h3>
             <Slider
-              value={menuWidth}
-              onChange={(value) => useAppStore.getState().updateSettings({ menuWidth: value as number })}
+              label="菜单宽度"
+              size="sm"
+              step={10}
               minValue={LAYOUT.MIN_MENU_WIDTH}
               maxValue={LAYOUT.MAX_MENU_WIDTH}
-              step={10}
-              showSteps={false}
+              value={menuWidth}
+              onChange={(value) => useAppStore.getState().updateSettings({ menuWidth: value as number })}
+              getValue={(value) => `${value}px`}
+              showSteps={true}
               showOutline
-              classNames={getSliderClassNames()}
+              color="primary"
+              className="max-w-md"
               aria-label="菜单宽度"
             />
           </section>,
@@ -401,18 +395,19 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
         {/* 全局圆角 */}
         {renderAnimatedSection(
           <section>
-            <h3 className="text-sm font-medium mb-3">
-              全局圆角: {borderRadius}px
-            </h3>
             <Slider
-              value={borderRadius}
-              onChange={(value) => useAppStore.getState().updateSettings({ borderRadius: value as number })}
+              label="全局圆角"
+              size="sm"
+              step={2}
               minValue={LAYOUT.MIN_BORDER_RADIUS}
               maxValue={LAYOUT.MAX_BORDER_RADIUS}
-              step={2}
-              showSteps={false}
+              value={borderRadius}
+              onChange={(value) => useAppStore.getState().updateSettings({ borderRadius: value as number })}
+              getValue={(value) => `${value}px`}
+              showSteps={true}
               showOutline
-              classNames={getSliderClassNames()}
+              color="primary"
+              className="max-w-md"
               aria-label="全局圆角"
             />
           </section>,

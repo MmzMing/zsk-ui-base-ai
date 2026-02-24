@@ -26,9 +26,6 @@ interface DualMenuProps {
   children?: React.ReactNode
 }
 
-// 核心功能菜单（显示在左侧第一列）
-const CORE_MENUS = ['dashboard', 'system', 'analysis']
-
 // 子菜单组件
 function SubMenuItem({ 
   item, 
@@ -76,7 +73,7 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
         }
       }
     }
-    return 'dashboard'
+    return ADMIN_MENUS[0]?.key || 'dashboard'
   })
 
   // 排序后的菜单
@@ -84,7 +81,7 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
 
   // 核心功能菜单（左侧第一列）
   const coreMenus = useMemo(() => {
-    return sortedMenus.filter(m => CORE_MENUS.includes(m.key))
+    return sortedMenus
   }, [sortedMenus])
 
   // 当前模块的详细菜单（左侧第二列）
@@ -127,6 +124,32 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
     }
   }, [navigate])
 
+  // 渲染顶部一级菜单
+  const renderTopMenu = () => (
+    <div className="flex items-center h-full gap-1">
+      {sortedMenus.map((menu) => {
+        const isActive = activeModule === menu.key
+        const Icon = menu.icon
+        
+        return (
+          <Button
+            key={menu.key}
+            variant={isActive ? 'flat' : 'light'}
+            color={isActive ? 'primary' : 'default'}
+            className={cn(
+              'h-10 px-3 gap-2 min-w-0',
+              isActive && 'bg-primary/10 font-medium'
+            )}
+            onPress={() => handleModuleClick(menu)}
+          >
+            {Icon && <Icon className="text-lg flex-shrink-0" />}
+            <span className="hidden xl:inline truncate">{menu.label}</span>
+          </Button>
+        )
+      })}
+    </div>
+  )
+
   // 默认 Logo
   const defaultLogo = (
     <div className="flex items-center gap-2">
@@ -139,10 +162,13 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
     <div className={cn('flex flex-col h-screen', className)}>
       {/* 顶部导航栏 */}
       <header className="h-14 bg-content1 border-b border-divider flex items-center justify-between px-4">
-        <div className="flex items-center gap-4">
-          <div className="flex-shrink-0">
+        <div className="flex items-center">
+          <div className="flex-shrink-0 mr-4">
             {logo || defaultLogo}
           </div>
+          <nav className="hidden md:flex">
+            {renderTopMenu()}
+          </nav>
         </div>
         <div className="flex items-center gap-2">
           {extra}
@@ -160,9 +186,6 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
         >
           {/* 第一列：核心功能入口 */}
           <div className="w-16 border-r border-divider flex flex-col py-2">
-            <div className="px-2 pb-2 mb-2 border-b border-divider">
-              <span className="text-xs text-default-400 font-medium">核心</span>
-            </div>
             <div className="flex flex-col gap-1 px-2">
               {coreMenus.map((menu) => {
                 const isActive = activeModule === menu.key
@@ -188,11 +211,6 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
 
           {/* 第二列：当前模块的细分菜单 */}
           <div className="flex-1 flex flex-col">
-            {/* 模块标题 */}
-            <div className="h-14 flex items-center px-4 border-b border-divider">
-              <span className="font-medium">{currentModuleMenu?.label}</span>
-            </div>
-
             {/* 菜单列表 */}
             <ScrollShadow className="flex-1 py-2">
               <nav className="px-2">

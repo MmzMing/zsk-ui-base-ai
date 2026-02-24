@@ -5,9 +5,17 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@heroui/react'
+import { 
+  Button, 
+  Avatar, 
+  Dropdown, 
+  DropdownTrigger, 
+  DropdownMenu, 
+  DropdownItem,
+  Divider
+} from '@heroui/react'
 import {
   HiOutlineMenu,
   HiOutlineX,
@@ -15,12 +23,16 @@ import {
   HiOutlineHome,
   HiOutlineDocumentText,
   HiOutlineTag,
-  HiOutlineUser
+  HiOutlineUser,
+  HiOutlineLogout,
+  HiOutlineCog,
+  HiOutlineViewGrid
 } from 'react-icons/hi'
 import { cn } from '@/utils'
 import { AnimatedThemeToggle } from '@/components/ui/AnimatedThemeToggle'
 import { SiteLogo } from '@/components/ui/SiteLogo'
 import { useScrollPosition } from '@/hooks'
+import { useUserStore } from '@/stores/user'
 
 // 导航项类型
 interface NavItem {
@@ -109,6 +121,8 @@ export default function FrontHeader({
   className
 }: FrontHeaderProps) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { userInfo, isLoggedIn, logout } = useUserStore()
   const navRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -119,6 +133,50 @@ export default function FrontHeader({
 
   // 滚动监听
   const { isScrolled } = useScrollPosition({ threshold: scrollThreshold })
+
+  // 处理登出
+  const handleLogout = useCallback(() => {
+    logout()
+    navigate('/')
+  }, [logout, navigate])
+
+  // 用户下拉菜单内容
+  const UserMenuContent = () => (
+    <DropdownMenu aria-label="用户菜单" variant="flat">
+      <DropdownItem
+        key="admin"
+        startContent={<HiOutlineViewGrid className="text-lg" />}
+        onPress={() => navigate('/admin/dashboard')}
+      >
+        后台管理
+      </DropdownItem>
+      <DropdownItem
+        key="profile"
+        startContent={<HiOutlineUser className="text-lg" />}
+        onPress={() => navigate('/admin/profile')}
+      >
+        个人中心
+      </DropdownItem>
+      <DropdownItem
+        key="settings"
+        startContent={<HiOutlineCog className="text-lg" />}
+        onPress={() => navigate('/admin/system/general')}
+      >
+        系统设置
+      </DropdownItem>
+      <DropdownItem key="divider" className="h-0 p-0">
+        <Divider />
+      </DropdownItem>
+      <DropdownItem
+        key="logout"
+        color="danger"
+        startContent={<HiOutlineLogout className="text-lg" />}
+        onPress={handleLogout}
+      >
+        退出登录
+      </DropdownItem>
+    </DropdownMenu>
+  )
 
   // 检测是否为移动端 (屏幕宽度 < 768px)
   const isMobile = useMemo(() => {
@@ -269,9 +327,25 @@ export default function FrontHeader({
 
                   <AnimatedThemeToggle />
 
-                  <Button variant="light" size="sm" as={Link} to="/login">
-                    登录
-                  </Button>
+                  {isLoggedIn ? (
+                    <Dropdown placement="bottom-end">
+                      <DropdownTrigger>
+                        <Button variant="light" className="gap-2 px-2">
+                          <Avatar
+                            name={userInfo?.name || '用户'}
+                            size="sm"
+                            className="cursor-pointer"
+                          />
+                          <span className="hidden sm:inline text-sm">{userInfo?.name || '用户'}</span>
+                        </Button>
+                      </DropdownTrigger>
+                      <UserMenuContent />
+                    </Dropdown>
+                  ) : (
+                    <Button variant="light" size="sm" as={Link} to="/login">
+                      登录
+                    </Button>
+                  )}
 
                   {/* 移动端菜单按钮 */}
                   <Button
@@ -366,16 +440,31 @@ export default function FrontHeader({
 
                 <AnimatedThemeToggle className="w-8 h-8 !min-w-8 rounded-full" />
 
-                {/* 登录按钮 - 收缩状态始终显示 */}
-                <Button
-                  variant="light"
-                  size="sm"
-                  as={Link}
-                  to="/login"
-                  className="min-w-14 h-8 rounded-full text-xs"
-                >
-                  登录
-                </Button>
+                {/* 登录按钮/用户菜单 - 收缩状态 */}
+                {isScrolled && isLoggedIn ? (
+                  <Dropdown placement="bottom-end">
+                    <DropdownTrigger>
+                      <Button variant="light" isIconOnly size="sm" className="min-w-8 w-8 h-8 rounded-full">
+                        <Avatar
+                          name={userInfo?.name || '用户'}
+                          size="sm"
+                          className="w-7 h-7"
+                        />
+                      </Button>
+                    </DropdownTrigger>
+                    <UserMenuContent />
+                  </Dropdown>
+                ) : (
+                  <Button
+                    variant="light"
+                    size="sm"
+                    as={Link}
+                    to="/login"
+                    className="min-w-14 h-8 rounded-full text-xs"
+                  >
+                    登录
+                  </Button>
+                )}
 
                 {/* 移动端菜单按钮 */}
                 <Button
@@ -434,15 +523,66 @@ export default function FrontHeader({
               </div>
 
               <div className="mt-4 pt-4 border-t border-divider">
-                <Button
-                  variant="flat"
-                  fullWidth
-                  as={Link}
-                  to="/login"
-                  onPress={() => setMobileMenuOpen(false)}
-                >
-                  登录
-                </Button>
+                {isLoggedIn ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-default-50 rounded-xl">
+                      <Avatar
+                        name={userInfo?.name || '用户'}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-default-900">{userInfo?.name || '用户'}</span>
+                        <span className="text-xs text-default-500">{userInfo?.email || '暂无邮箱'}</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="light"
+                      fullWidth
+                      className="justify-start gap-3 text-default-600"
+                      onPress={() => {
+                        navigate('/admin/dashboard')
+                        setMobileMenuOpen(false)
+                      }}
+                      startContent={<HiOutlineViewGrid className="text-lg" />}
+                    >
+                      后台管理
+                    </Button>
+                    <Button
+                      variant="light"
+                      fullWidth
+                      className="justify-start gap-3 text-default-600"
+                      onPress={() => {
+                        navigate('/admin/profile')
+                        setMobileMenuOpen(false)
+                      }}
+                      startContent={<HiOutlineUser className="text-lg" />}
+                    >
+                      个人中心
+                    </Button>
+                    <Button
+                      variant="light"
+                      fullWidth
+                      className="justify-start gap-3 text-danger"
+                      onPress={() => {
+                        handleLogout()
+                        setMobileMenuOpen(false)
+                      }}
+                      startContent={<HiOutlineLogout className="text-lg" />}
+                    >
+                      退出登录
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="flat"
+                    fullWidth
+                    as={Link}
+                    to="/login"
+                    onPress={() => setMobileMenuOpen(false)}
+                  >
+                    登录
+                  </Button>
+                )}
               </div>
             </nav>
           </motion.div>

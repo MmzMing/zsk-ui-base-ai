@@ -120,7 +120,7 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
 
   // 渲染顶部一级菜单
   const renderTopMenu = () => (
-    <div className="flex items-center h-full">
+    <div className="flex items-center h-full gap-1">
       {sortedMenus.map((menu) => {
         const isActive = activeMenuKey === menu.key
         const Icon = menu.icon
@@ -128,17 +128,18 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
         return (
           <Button
             key={menu.key}
-            variant="light"
+            variant={isActive ? 'flat' : 'light'}
+            color={isActive ? 'primary' : 'default'}
             className={cn(
-              'h-full px-4 gap-2 rounded-none',
-              isActive && 'bg-primary/10 text-primary border-b-2 border-primary'
+              'h-10 px-3 gap-2 min-w-0',
+              isActive && 'bg-primary/10 font-medium'
             )}
             onPress={() => handleMenuClick(menu)}
           >
-            {Icon && <Icon className="text-lg" />}
-            <span>{menu.label}</span>
+            {Icon && <Icon className="text-lg flex-shrink-0" />}
+            <span className="hidden xl:inline truncate">{menu.label}</span>
             {menu.children && menu.children.length > 0 && (
-              <HiOutlineChevronDown className="text-xs" />
+              <HiOutlineChevronDown className="text-xs hidden xl:block" />
             )}
           </Button>
         )
@@ -154,14 +155,6 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       className="h-screen bg-content1 border-r border-divider flex flex-col"
     >
-      {/* Logo 区域 */}
-      <div className="h-14 flex items-center justify-center px-4 border-b border-divider">
-        <div className="flex items-center gap-2">
-          <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-          <span className="font-semibold text-lg">{currentMenu?.label}</span>
-        </div>
-      </div>
-
       {/* 子菜单区域 */}
       <ScrollShadow className="flex-1 py-2">
         <nav className="px-2">
