@@ -18,9 +18,12 @@ import {
   HiOutlineRefresh,
   HiOutlineViewList,
   HiOutlineMenuAlt3,
-  HiOutlineViewBoards
+  HiOutlineViewBoards,
+  HiOutlineBan,
+  HiOutlineArrowRight,
+  HiOutlineArrowsExpand
 } from 'react-icons/hi'
-import { useAppStore, type ThemeMode, type MenuLayout } from '@/stores/app'
+import { useAppStore, type ThemeMode, type MenuLayout, type PageTransition } from '@/stores/app'
 import { useTheme } from '@/hooks/useTheme'
 import { LAYOUT } from '@/constants'
 import { cn } from '@/utils'
@@ -45,6 +48,19 @@ const MENU_LAYOUTS: Array<{
   { value: 'mixed', icon: HiOutlineTemplate, label: '混合' },
   { value: 'dual', icon: HiOutlineViewBoards, label: '双列' },
   { value: 'dock', icon: HiOutlineViewBoards, label: 'Dock' }
+]
+
+// 页面切换动效选项
+const PAGE_TRANSITIONS: Array<{
+  value: PageTransition
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+}> = [
+  { value: 'none', icon: HiOutlineBan, label: '关闭' },
+  { value: 'fade', icon: HiOutlineSparkles, label: '淡入淡出' },
+  { value: 'slide', icon: HiOutlineArrowRight, label: '滑入滑出' },
+  { value: 'scale', icon: HiOutlineArrowsExpand, label: '缩放渐变' },
+  { value: 'layered', icon: HiOutlineViewBoards, label: '层级切换' }
 ]
 
 // 背景层配置
@@ -128,6 +144,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
     menuWidth,
     borderRadius,
     fontSize,
+    pageTransition,
   } = adminSettings
 
   const { actualTheme } = useTheme()
@@ -318,6 +335,36 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           3
         )}
 
+        {/* 页面切换动效 */}
+        {renderAnimatedSection(
+          <section>
+            <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+              <HiOutlineSparkles className="text-lg" />
+              页面切换动效
+            </h3>
+            <div className="flex gap-2">
+              {PAGE_TRANSITIONS.map((transition) => {
+                const Icon = transition.icon
+                return (
+                  <button
+                    key={transition.value}
+                    className={cn(
+                      'flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all',
+                      getButtonClass(pageTransition === transition.value)
+                    )}
+                    onClick={() => updateSettings({ pageTransition: transition.value })}
+                    title={transition.label}
+                  >
+                    <Icon className="text-xl" />
+                    <span className="text-xs">{transition.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </section>,
+          4
+        )}
+
         {/* 布局设置 */}
         {renderAnimatedSection(
           <section>
@@ -346,7 +393,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               ))}
             </div>
           </section>,
-          4
+          5
         )}
 
         {/* 动效设置 */}
@@ -379,7 +426,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               </div>
             </div>
           </section>,
-          5
+          6
         )}
 
         {/* 菜单宽度 */}
@@ -401,7 +448,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               aria-label="菜单宽度"
             />
           </section>,
-          6
+          7
         )}
 
         {/* 全局圆角 */}
@@ -423,7 +470,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               aria-label="全局圆角"
             />
           </section>,
-          7
+          8
         )}
 
         {/* 字体大小 */}
@@ -448,7 +495,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               ))}
             </div>
           </section>,
-          8
+          9
         )}
 
 

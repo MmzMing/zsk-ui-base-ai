@@ -43,7 +43,7 @@ import { ADMIN_MENUS, getSortedMenus } from '@/constants/menu'
 import ThemeDrawer from './ThemeDrawer'
 import { cn } from '@/utils'
 import { SiteLogo } from '@/components/ui/SiteLogo'
-import { AnimatedThemeToggle } from '@/components/ui/AnimatedThemeToggle'
+import { AnimatedThemeToggle } from '@/components/ui/magicui/AnimatedThemeToggle'
 
 // 面包屑项类型
 interface BreadcrumbItem {

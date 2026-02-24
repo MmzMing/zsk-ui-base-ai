@@ -30,8 +30,9 @@ import {
   HiOutlineBeaker
 } from 'react-icons/hi'
 import { cn } from '@/utils'
-import { AnimatedThemeToggle } from '@/components/ui/AnimatedThemeToggle'
+import { AnimatedThemeToggle } from '@/components/ui/magicui/AnimatedThemeToggle'
 import { SiteLogo } from '@/components/ui/SiteLogo'
+import { SearchDialog } from '@/components/search/SearchDialog'
 import { useScrollPosition } from '@/hooks'
 import { useUserStore } from '@/stores/user'
 
@@ -132,9 +133,22 @@ export default function FrontHeader({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [logoHovered, setLogoHovered] = useState(false)
   const [logoCollapsedHovered, setLogoCollapsedHovered] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   // 滚动监听
   const { isScrolled } = useScrollPosition({ threshold: scrollThreshold })
+
+  // 快捷键监听 (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // 处理登出
   const handleLogout = useCallback(() => {
@@ -241,8 +255,7 @@ export default function FrontHeader({
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full',
-        isScrolled ? 'py-2 px-4' : '',
+        'sticky top-0 z-50 w-full h-16',
         'transition-all duration-300',
         className
       )}
@@ -256,7 +269,7 @@ export default function FrontHeader({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="w-full border-b border-divider bg-background/80 backdrop-blur-md"
+            className="absolute inset-0 w-full border-b border-divider bg-background/80 backdrop-blur-md"
           >
             <div className="container mx-auto px-4">
               <div className="flex h-16 items-center justify-between">
@@ -322,7 +335,11 @@ export default function FrontHeader({
                 {/* 右侧工具栏 - 固定宽度 */}
                 <div className="w-[200px] flex-shrink-0 flex justify-end items-center gap-2">
                   {showSearch && (
-                    <Button variant="light" isIconOnly>
+                    <Button 
+                      variant="light" 
+                      isIconOnly
+                      onPress={() => setIsSearchOpen(true)}
+                    >
                       <HiOutlineSearch className="text-lg" />
                     </Button>
                   )}
@@ -374,7 +391,7 @@ export default function FrontHeader({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex justify-between items-center px-4"
+            className="absolute inset-0 flex items-center justify-between px-4"
           >
             {/* 左侧圆形容器 - Logo */}
             <motion.div
@@ -435,6 +452,7 @@ export default function FrontHeader({
                     isIconOnly
                     size="sm"
                     className="min-w-8 w-8 h-8 rounded-full"
+                    onPress={() => setIsSearchOpen(true)}
                   >
                     <HiOutlineSearch className="text-base" />
                   </Button>
@@ -497,6 +515,7 @@ export default function FrontHeader({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
+              'absolute left-0 right-0 top-full z-50',
               'md:hidden border-t border-divider bg-background/95 backdrop-blur-xl',
               isScrolled ? 'mt-2 rounded-2xl shadow-lg mx-4' : ''
             )}
@@ -590,6 +609,12 @@ export default function FrontHeader({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 搜索弹窗 */}
+      <SearchDialog 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
     </header>
   )
 }

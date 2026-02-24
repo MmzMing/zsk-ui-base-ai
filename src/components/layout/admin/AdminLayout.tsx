@@ -4,13 +4,13 @@
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useLocation, useOutlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollShadow } from '@heroui/react'
 import AdminSidebar from './AdminSidebar'
 import AdminHeader from './AdminHeader'
 import MultiTabs from './MultiTabs'
-import { useAppStore, type PageTransition } from '@/stores/app'
+import { useAppStore } from '@/stores/app'
 import { ADMIN_MENUS, type MenuItem } from '@/constants/menu'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { cn } from '@/utils'
@@ -22,38 +22,6 @@ import {
   DockMenu
 } from './menus'
 
-// 页面切换动画类型
-interface TransitionVariant {
-  initial?: { opacity?: number; x?: number; y?: number; scale?: number }
-  animate?: { opacity?: number; x?: number; y?: number; scale?: number }
-  exit?: { opacity?: number; x?: number; y?: number; scale?: number }
-}
-
-// 页面切换动画配置
-const pageTransitionVariants: Record<PageTransition, TransitionVariant> = {
-  none: {},
-  fade: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 }
-  },
-  slide: {
-    initial: { opacity: 0, x: 20 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -20 }
-  },
-  scale: {
-    initial: { opacity: 0, scale: 0.95 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 1.05 }
-  },
-  layered: {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 }
-  }
-}
-
 // 布局属性
 interface AdminLayoutProps {
   className?: string
@@ -61,6 +29,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ className }: AdminLayoutProps) {
   const location = useLocation()
+  const element = useOutlet()
   const { adminSettings } = useAppStore()
   const {
     menuLayout,
@@ -140,7 +109,45 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
   }, [allowTextSelection])
 
   // 获取当前动画配置
-  const currentTransition = pageTransitionVariants[pageTransition]
+  const currentTransition = useMemo(() => {
+    switch (pageTransition) {
+      case 'fade':
+        return {
+          initial: { opacity: 0, filter: 'blur(4px)', y: 4 },
+          animate: { opacity: 1, filter: 'blur(0px)', y: 0 },
+          exit: { opacity: 0, filter: 'blur(4px)', y: -4 },
+          transition: { duration: 0.25, ease: "easeOut" }
+        }
+      case 'slide':
+        return {
+          initial: { opacity: 0, x: 15 },
+          animate: { opacity: 1, x: 0 },
+          exit: { opacity: 0, x: -15 },
+          transition: { type: "spring", stiffness: 350, damping: 25 }
+        }
+      case 'scale':
+        return {
+          initial: { opacity: 0, scale: 0.97 },
+          animate: { opacity: 1, scale: 1 },
+          exit: { opacity: 0, scale: 1.03 },
+          transition: { duration: 0.2 }
+        }
+      case 'layered':
+        return {
+          initial: { opacity: 0, y: 15 },
+          animate: { opacity: 1, y: 0 },
+          exit: { opacity: 0, y: -15 },
+          transition: { duration: 0.25, ease: "easeInOut" }
+        }
+      default:
+        return {
+          initial: {},
+          animate: {},
+          exit: {},
+          transition: {}
+        }
+    }
+  }, [pageTransition])
 
   // 渲染内容区域
   const renderContent = () => (
@@ -149,15 +156,16 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
         className="p-4 md:p-6"
         style={{ padding: contentPadding }}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location.pathname}
-            initial={pageTransition !== 'none' ? currentTransition.initial : undefined}
-            animate={pageTransition !== 'none' ? currentTransition.animate : undefined}
-            exit={pageTransition !== 'none' ? currentTransition.exit : undefined}
-            transition={{ duration: 0.2 }}
+            initial={pageTransition !== 'none' ? currentTransition.initial : false}
+            animate={pageTransition !== 'none' ? currentTransition.animate : {}}
+            exit={pageTransition !== 'none' ? currentTransition.exit : {}}
+            transition={pageTransition !== 'none' ? (currentTransition.transition as any) : {}}
+            className="w-full h-full"
           >
-            <Outlet />
+            {element}
           </motion.div>
         </AnimatePresence>
       </main>
