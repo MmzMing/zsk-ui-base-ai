@@ -177,7 +177,7 @@ export default function MultiTabs({ className }: MultiTabsProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 px-4 py-2 border-b border-divider bg-content1',
+        'flex items-center gap-2 px-4 py-1.5 border-b border-divider bg-background/60 backdrop-blur-md z-10',
         className
       )}
     >

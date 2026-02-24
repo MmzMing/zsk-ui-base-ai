@@ -22,6 +22,20 @@
   --text-7xl: calc(var(--theme-font-size, 14px) * 4.5);
   --text-8xl: calc(var(--theme-font-size, 14px) * 6);
   --text-9xl: calc(var(--theme-font-size, 14px) * 8);
+
+  /* 确保 Tailwind 使用 CSS 变量作为颜色值，而不是静态 Hex */
+  --color-primary: var(--color-primary);
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+  --color-primary-foreground: var(--color-primary-foreground);
 }
 
 /**

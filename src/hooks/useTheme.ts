@@ -5,6 +5,7 @@
 
 import { useEffect, useCallback } from 'react'
 import { useAppStore, type ThemeMode } from '@/stores/app'
+import { generatePalette } from '@/utils/color'
 
 // 主题模式映射
 const getSystemTheme = (): 'light' | 'dark' => {
@@ -53,8 +54,23 @@ export function useTheme() {
       root.classList.remove('dark')
     }
 
-    // 应用 CSS 变量
+    // 生成色阶
+    const palette = generatePalette(primaryColor)
+
+    // 应用 CSS 变量 - Color Primary (Tailwind Custom)
     root.style.setProperty('--color-primary', primaryColor)
+    Object.entries(palette).forEach(([key, value]) => {
+      if (key === 'DEFAULT') return
+      root.style.setProperty(`--color-primary-${key}`, value)
+    })
+    
+    // 应用 CSS 变量 - HeroUI Primary
+    root.style.setProperty('--heroui-primary', primaryColor)
+    Object.entries(palette).forEach(([key, value]) => {
+      if (key === 'DEFAULT') return
+      root.style.setProperty(`--heroui-primary-${key}`, value)
+    })
+    
     root.style.setProperty('--border-radius', `${borderRadius}px`)
     root.style.setProperty('--font-size', `${fontSize}px`)
     root.style.setProperty('--theme-font-size', `${fontSize}px`)

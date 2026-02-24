@@ -160,7 +160,6 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
 
   // 根据主题模式获取开关样式
   const getSwitchClassNames = () => ({
-    wrapper: actualTheme === 'dark' ? 'bg-white/20' : 'bg-gray-200',
     thumb: actualTheme === 'dark' ? 'bg-white' : 'bg-white'
   })
 
@@ -328,6 +327,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   <span className="text-sm">{item.label}</span>
                   <Switch
                     size="sm"
+                    color="primary"
                     isSelected={item.value}
                     onValueChange={(value) => useAppStore.getState().updateSettings({ [item.key]: value })}
                     classNames={getSwitchClassNames()}
@@ -351,6 +351,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                 <span className="text-sm">点击火花效果</span>
                 <Switch
                   size="sm"
+                  color="primary"
                   isSelected={clickEffect}
                   onValueChange={(value) => useAppStore.getState().updateSettings({ clickEffect: value })}
                   classNames={getSwitchClassNames()}
@@ -360,6 +361,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                 <span className="text-sm">色弱模式</span>
                 <Switch
                   size="sm"
+                  color="primary"
                   isSelected={colorWeak}
                   onValueChange={(value) => useAppStore.getState().updateSettings({ colorWeak: value })}
                   classNames={getSwitchClassNames()}
