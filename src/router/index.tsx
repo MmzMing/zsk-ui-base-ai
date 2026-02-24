@@ -1,12 +1,13 @@
 /**
  * 路由配置
  */
-import { createBrowserRouter, type RouteObject } from 'react-router-dom'
+import { createBrowserRouter, type RouteObject, Outlet } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
 // 布局组件
 import { AdminLayout } from '@/components/layout/admin'
 import { FrontLayout } from '@/components/layout/front'
+import { useTheme } from '@/hooks/useTheme'
 
 // 懒加载页面组件
 const HomePage = lazy(() => import('@/pages/Home'))
@@ -36,67 +37,78 @@ function withSuspense(Component: React.LazyExoticComponent<React.ComponentType>)
   )
 }
 
+// 根布局组件，用于应用全局主题
+function RootLayout() {
+  useTheme()
+  return <Outlet />
+}
+
 // 路由配置
 export const routes: RouteObject[] = [
-  // 前台路由
   {
-    path: '/',
-    element: <FrontLayout />,
+    element: <RootLayout />,
     children: [
+      // 前台路由
       {
-        index: true,
-        element: withSuspense(HomePage),
+        path: '/',
+        element: <FrontLayout />,
+        children: [
+          {
+            index: true,
+            element: withSuspense(HomePage),
+          },
+          {
+            path: 'test',
+            element: withSuspense(TestPage),
+          },
+        ],
       },
-      {
-        path: 'test',
-        element: withSuspense(TestPage),
-      },
-    ],
-  },
 
-  // 认证路由
-  {
-    path: '/login',
-    element: withSuspense(LoginPage),
-  },
-  {
-    path: '/register',
-    element: withSuspense(RegisterPage),
-  },
+      // 认证路由
+      {
+        path: '/login',
+        element: withSuspense(LoginPage),
+      },
+      {
+        path: '/register',
+        element: withSuspense(RegisterPage),
+      },
 
-  // 后台管理路由
-  {
-    path: '/admin',
-    element: <AdminLayout />,
-    children: [
+      // 后台管理路由
       {
-        index: true,
-        element: withSuspense(AdminDashboard),
+        path: '/admin',
+        element: <AdminLayout />,
+        children: [
+          {
+            index: true,
+            element: withSuspense(AdminDashboard),
+          },
+          {
+            path: 'dashboard',
+            element: withSuspense(AdminDashboard),
+          },
+          // 其他后台路由可以在这里添加
+          {
+            path: '*',
+            element: (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <h2 className="text-xl font-bold">页面开发中</h2>
+                  <p className="text-default-500 mt-2">该页面正在开发中，请稍后再来</p>
+                </div>
+              </div>
+            ),
+          },
+        ],
       },
-      {
-        path: 'dashboard',
-        element: withSuspense(AdminDashboard),
-      },
-      // 其他后台路由可以在这里添加
+
+      // 404
       {
         path: '*',
-        element: (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <h2 className="text-xl font-bold">页面开发中</h2>
-              <p className="text-default-500 mt-2">该页面正在开发中，请稍后再来</p>
-            </div>
-          </div>
-        ),
+        element: withSuspense(NotFoundPage),
       },
-    ],
-  },
-
-  // 404
-  {
-    path: '*',
-    element: withSuspense(NotFoundPage),
-  },
+    ]
+  }
 ]
 
 // 创建路由实例

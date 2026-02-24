@@ -61,6 +61,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ className }: AdminLayoutProps) {
   const location = useLocation()
+  const { adminSettings } = useAppStore()
   const {
     menuLayout,
     showHeader,
@@ -70,7 +71,7 @@ export default function AdminLayout({ className }: AdminLayoutProps) {
     allowTextSelection,
     colorWeak,
     multiTab
-  } = useAppStore()
+  } = adminSettings
 
   const { isMobile } = useBreakpoint()
   const [sidebarOpen, setSidebarOpen] = useState(false)

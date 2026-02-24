@@ -99,50 +99,118 @@ const defaultSettings: AppSettings = {
   pageTransition: 'fade',
 }
 
-// 创建应用 Store
-export const useAppStore = create<AppState>()(
+// 默认后台设置（与前台隔离）
+const defaultAdminSettings: AppSettings = {
+  ...defaultSettings,
+  menuLayout: 'vertical', // 后台默认垂直布局
+}
+
+/**
+ * 应用全局状态 Store
+ * 包含：基础 UI 设置、后台管理独立设置、侧边栏状态、全屏状态等
+ */
+export const useAppStore = create<AppState & {
+  /** 后台独立设置 */
+  adminSettings: AppSettings
+  /** 更新后台独立设置 */
+  updateAdminSettings: (settings: Partial<AppSettings>) => void
+  /** 重置后台独立设置 */
+  resetAdminSettings: () => void
+}>()(
   persist(
     (set) => ({
+      // --- 1. 状态初始化 ---
       ...defaultSettings,
+      /** 侧边栏折叠状态 */
       sidebarCollapsed: false,
+      /** 全屏状态标识 */
       isFullscreen: false,
+      /** 后台独立设置初始化 */
+      adminSettings: defaultAdminSettings,
 
+      // --- 2. 基础 Action ---
+      
+      /**
+       * 更新全局基础设置
+       * @param newSettings - 需要更新的设置项
+       */
       updateSettings: (newSettings) =>
         set((state) => ({
           ...state,
           ...newSettings,
         })),
 
+      /**
+       * 更新后台管理系统独立设置
+       * @param newSettings - 需要更新的后台设置项
+       */
+      updateAdminSettings: (newSettings) =>
+        set((state) => ({
+          adminSettings: {
+            ...state.adminSettings,
+            ...newSettings,
+          },
+        })),
+
+      /**
+       * 重置全局基础设置为默认值
+       */
       resetSettings: () =>
         set((state) => ({
           ...state,
           ...defaultSettings,
         })),
 
+      /**
+       * 重置后台管理系统设置为默认值
+       */
+      resetAdminSettings: () =>
+        set({
+          adminSettings: defaultAdminSettings,
+        }),
+
+      /**
+       * 切换侧边栏展开/收起状态
+       */
       toggleSidebar: () =>
         set((state) => ({
           sidebarCollapsed: !state.sidebarCollapsed,
         })),
 
+      /**
+       * 设置侧边栏固定状态
+       * @param collapsed - 是否折叠
+       */
       setSidebarCollapsed: (collapsed) =>
         set({
           sidebarCollapsed: collapsed,
         }),
 
+      /**
+       * 切换浏览器全屏状态
+       */
       toggleFullscreen: () => {
         if (typeof document === 'undefined') return
 
         if (!document.fullscreenElement) {
+          // 进入全屏
           document.documentElement.requestFullscreen()
           set({ isFullscreen: true })
         } else {
+          // 退出全屏
           document.exitFullscreen()
           set({ isFullscreen: false })
         }
       },
     }),
     {
+      // --- 3. 持久化配置 ---
+      /** 本地存储 Key 名称 */
       name: 'zsk-app-settings',
+      /** 
+       * 定义需要持久化的状态字段
+       * 避免将不必要的状态（如全屏状态）存入本地存储
+       */
       partialize: (state) => ({
         themeMode: state.themeMode,
         primaryColor: state.primaryColor,
@@ -163,6 +231,8 @@ export const useAppStore = create<AppState>()(
         contentPadding: state.contentPadding,
         pageTransition: state.pageTransition,
         sidebarCollapsed: state.sidebarCollapsed,
+        // 持久化后台独立设置
+        adminSettings: state.adminSettings,
       }),
     }
   )

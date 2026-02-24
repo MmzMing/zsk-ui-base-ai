@@ -5,11 +5,8 @@
 import { RouterProvider } from 'react-router-dom'
 import { HeroUIProvider, ToastProvider } from '@heroui/react'
 import { router } from '@/router'
-import { useTheme } from '@/hooks/useTheme'
 
 export default function App() {
-  useTheme() // 初始化主题配置
-
   return (
     <HeroUIProvider>
       <RouterProvider router={router} />

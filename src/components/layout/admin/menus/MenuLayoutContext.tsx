@@ -35,18 +35,19 @@ interface MenuLayoutProviderProps {
 // Provider 组件
 export function MenuLayoutProvider({ children }: MenuLayoutProviderProps) {
   const {
-    menuLayout,
-    showHeader,
     sidebarCollapsed,
     toggleSidebar,
     setSidebarCollapsed,
-    updateSettings
+    adminSettings,
+    updateAdminSettings
   } = useAppStore()
+
+  const { menuLayout, showHeader } = adminSettings
 
   // 切换菜单布局
   const setMenuLayout = useCallback((layout: MenuLayout) => {
-    updateSettings({ menuLayout: layout })
-  }, [updateSettings])
+    updateAdminSettings({ menuLayout: layout })
+  }, [updateAdminSettings])
 
   // 根据布局类型确定是否显示侧边栏
   // horizontal 布局不显示侧边栏，dock 布局不显示侧边栏

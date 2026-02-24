@@ -41,7 +41,8 @@ interface DockMenuProps {
 
 export default function DockMenu({ className }: DockMenuProps) {
   const navigate = useNavigate()
-  const { themeMode, toggleFullscreen, isFullscreen } = useAppStore()
+  const { toggleFullscreen, isFullscreen, adminSettings } = useAppStore()
+  const { themeMode } = adminSettings
   const { actualTheme, setThemeMode } = useTheme()
   const { userInfo, logout } = useUserStore()
   

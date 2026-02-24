@@ -6,7 +6,7 @@
 
 import { useCallback } from 'react'
 import { Button, Switch, Slider } from '@heroui/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import {
   HiOutlineColorSwatch,
   HiOutlineMoon,
@@ -64,7 +64,7 @@ const overlayVariants = {
 }
 
 // 背景层动画变体 - 交错滑入
-const backgroundLayerVariants = {
+const backgroundLayerVariants: Variants = {
   hidden: () => ({
     x: '100%',
     opacity: 0,
@@ -79,7 +79,7 @@ const backgroundLayerVariants = {
     transition: {
       delay: custom * 0.08,
       duration: 0.5,
-      ease: [0.25, 0.46, 0.45, 0.94] as any
+      ease: [0.25, 0.46, 0.45, 0.94]
     }
   }),
   exit: (custom: number) => ({
@@ -88,12 +88,12 @@ const backgroundLayerVariants = {
     transition: {
       delay: custom * 0.03,
       duration: 0.3,
-      ease: 'easeIn' as any
+      ease: 'easeIn'
     }
   })
 }
 // 内容项动画变体 - 交错显现
-const contentItemVariants = {
+const contentItemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (custom: number) => ({
     opacity: 1,
@@ -101,13 +101,19 @@ const contentItemVariants = {
     transition: {
       delay: 0.3 + custom * 0.1,
       duration: 0.4,
-      ease: 'easeOut' as any
+      ease: 'easeOut'
     }
   })
 }
 
 // 主题设置面板内容
 function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
+  const {
+    adminSettings,
+    updateAdminSettings,
+    resetAdminSettings
+  } = useAppStore()
+
   const {
     themeMode,
     primaryColor,
@@ -122,10 +128,9 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
     menuWidth,
     borderRadius,
     fontSize,
-    resetSettings
-  } = useAppStore()
+  } = adminSettings
 
-  const { setThemeMode, setPrimaryColor, actualTheme } = useTheme()
+  const { actualTheme } = useTheme()
 
   // 根据主题模式设置文字颜色
   const drawerTextColor = actualTheme === 'dark' ? 'text-white' : 'text-gray-800'
@@ -165,8 +170,13 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
 
   // 重置设置
   const handleReset = useCallback(() => {
-    resetSettings()
-  }, [resetSettings])
+    resetAdminSettings()
+  }, [resetAdminSettings])
+
+  // 更新设置帮助函数
+  const updateSettings = useCallback((settings: Partial<typeof adminSettings>) => {
+    updateAdminSettings(settings)
+  }, [updateAdminSettings])
 
   // 渲染带动画的设置项
   const renderAnimatedSection = (
@@ -241,7 +251,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                     'flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all',
                     getButtonClass(themeMode === mode.value)
                   )}
-                  onClick={() => setThemeMode(mode.value)}
+                  onClick={() => updateSettings({ themeMode: mode.value })}
                 >
                   <mode.icon className="text-xl" />
                   <span className="text-xs">{mode.label}</span>
@@ -268,7 +278,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                     primaryColor === color.value ? 'ring-2 ring-offset-2 ring-offset-transparent ring-white' : ''
                   )}
                   style={{ backgroundColor: color.value }}
-                  onClick={() => setPrimaryColor(color.value)}
+                  onClick={() => updateSettings({ primaryColor: color.value })}
                   title={color.label}
                   aria-label={`选择${color.label}主题色`}
                 />
@@ -295,7 +305,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                       'flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all',
                       getButtonClass(menuLayout === layout.value)
                     )}
-                    onClick={() => useAppStore.getState().updateSettings({ menuLayout: layout.value })}
+                    onClick={() => updateSettings({ menuLayout: layout.value })}
                     title={layout.label}
                   >
                     <Icon className="text-xl" />
@@ -328,8 +338,8 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   <Switch
                     size="sm"
                     color="primary"
-                    isSelected={item.value}
-                    onValueChange={(value) => useAppStore.getState().updateSettings({ [item.key]: value })}
+                    isSelected={item.value as boolean}
+                    onValueChange={(value) => updateSettings({ [item.key]: value })}
                     classNames={getSwitchClassNames()}
                   />
                 </div>
@@ -353,7 +363,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   size="sm"
                   color="primary"
                   isSelected={clickEffect}
-                  onValueChange={(value) => useAppStore.getState().updateSettings({ clickEffect: value })}
+                  onValueChange={(value) => updateSettings({ clickEffect: value })}
                   classNames={getSwitchClassNames()}
                 />
               </div>
@@ -363,7 +373,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   size="sm"
                   color="primary"
                   isSelected={colorWeak}
-                  onValueChange={(value) => useAppStore.getState().updateSettings({ colorWeak: value })}
+                  onValueChange={(value) => updateSettings({ colorWeak: value })}
                   classNames={getSwitchClassNames()}
                 />
               </div>
@@ -382,7 +392,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               minValue={LAYOUT.MIN_MENU_WIDTH}
               maxValue={LAYOUT.MAX_MENU_WIDTH}
               value={menuWidth}
-              onChange={(value) => useAppStore.getState().updateSettings({ menuWidth: value as number })}
+              onChange={(value) => updateSettings({ menuWidth: value as number })}
               getValue={(value) => `${value}px`}
               showSteps={true}
               showOutline
@@ -404,7 +414,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               minValue={LAYOUT.MIN_BORDER_RADIUS}
               maxValue={LAYOUT.MAX_BORDER_RADIUS}
               value={borderRadius}
-              onChange={(value) => useAppStore.getState().updateSettings({ borderRadius: value as number })}
+              onChange={(value) => updateSettings({ borderRadius: value as number })}
               getValue={(value) => `${value}px`}
               showSteps={true}
               showOutline
@@ -431,7 +441,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                     'flex-1 py-2 rounded-lg text-sm transition-all',
                     getButtonClass(fontSize === size)
                   )}
-                  onClick={() => useAppStore.getState().updateSettings({ fontSize: size })}
+                  onClick={() => updateSettings({ fontSize: size })}
                 >
                   {size}px
                 </button>

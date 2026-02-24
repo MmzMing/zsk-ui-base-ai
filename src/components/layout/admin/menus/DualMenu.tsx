@@ -58,7 +58,8 @@ function SubMenuItem({
 export default function DualMenu({ className, logo, extra, children }: DualMenuProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { menuWidth } = useAppStore()
+  const { adminSettings } = useAppStore()
+  const { menuWidth } = adminSettings
 
   // 当前选中的模块
   const [activeModule, setActiveModule] = useState<string>(() => {

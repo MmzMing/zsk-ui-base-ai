@@ -181,9 +181,9 @@ export default function VerticalMenu({ className, logo }: VerticalMenuProps) {
   const {
     sidebarCollapsed: collapsed,
     toggleSidebar,
-    menuWidth,
-    sidebarAccordion
+    adminSettings
   } = useAppStore()
+  const { menuWidth, sidebarAccordion } = adminSettings
 
   // 获取当前激活的菜单项
   const activeKey = useMemo(() => {

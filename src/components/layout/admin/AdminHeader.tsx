@@ -61,7 +61,8 @@ interface AdminHeaderProps {
 export default function AdminHeader({ breadcrumbs = [], className }: AdminHeaderProps) {
   const navigate = useNavigate()
   const { userInfo, logout } = useUserStore()
-  const { themeMode, showBreadcrumb } = useAppStore()
+  const { adminSettings } = useAppStore()
+  const { themeMode, showBreadcrumb } = adminSettings
   const { setThemeMode } = useTheme()
   const { isMobile } = useBreakpoint()
   const [searchValue, setSearchValue] = useState('')

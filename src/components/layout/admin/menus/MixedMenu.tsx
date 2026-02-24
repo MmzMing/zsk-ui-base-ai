@@ -59,7 +59,8 @@ function SubMenuItem({
 export default function MixedMenu({ className, logo, extra, children }: MixedMenuProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { menuWidth } = useAppStore()
+  const { adminSettings } = useAppStore()
+  const { menuWidth } = adminSettings
 
   // 当前选中的一级菜单
   const [activeMenuKey, setActiveMenuKey] = useState<string>(() => {

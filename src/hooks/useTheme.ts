@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useAppStore, type ThemeMode } from '@/stores/app'
 import { generatePalette } from '@/utils/color'
 
@@ -22,6 +23,15 @@ const getActualTheme = (mode: ThemeMode): 'light' | 'dark' => {
 }
 
 export function useTheme() {
+  const location = useLocation()
+  const isAdmin = location.pathname.startsWith('/admin')
+
+  const state = useAppStore()
+  
+  // 根据路由选择配置
+  const settings = isAdmin ? state.adminSettings : state
+  const updateFn = isAdmin ? state.updateAdminSettings : state.updateSettings
+
   const {
     themeMode,
     primaryColor,
@@ -33,9 +43,8 @@ export function useTheme() {
     colorWeak,
     allowTextSelection,
     clickEffect,
-    menuWidth,
-    updateSettings
-  } = useAppStore()
+    menuWidth
+  } = settings
 
   // 应用主题到 DOM
   const applyTheme = useCallback(() => {
@@ -144,18 +153,18 @@ export function useTheme() {
     const modes: ThemeMode[] = ['light', 'dark', 'system']
     const currentIndex = modes.indexOf(themeMode)
     const nextMode = modes[(currentIndex + 1) % modes.length]
-    updateSettings({ themeMode: nextMode })
-  }, [themeMode, updateSettings])
+    updateFn({ themeMode: nextMode })
+  }, [themeMode, updateFn])
 
   // 设置主题模式
   const setThemeMode = useCallback((mode: ThemeMode) => {
-    updateSettings({ themeMode: mode })
-  }, [updateSettings])
+    updateFn({ themeMode: mode })
+  }, [updateFn])
 
   // 设置主色调
   const setPrimaryColor = useCallback((color: string) => {
-    updateSettings({ primaryColor: color })
-  }, [updateSettings])
+    updateFn({ primaryColor: color })
+  }, [updateFn])
 
   return {
     themeMode,
