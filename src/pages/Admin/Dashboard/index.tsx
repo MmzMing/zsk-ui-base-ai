@@ -90,7 +90,7 @@ export default function Dashboard() {
             {quickActions.map((action) => (
               <button
                 key={action.title}
-                className="p-4 text-left rounded-lg border border-divider hover:border-primary hover:bg-primary/5 transition-colors group"
+                className="p-4 text-left rounded-lg admin-border hover:border-primary hover:bg-primary/5 transition-colors group"
               >
                 <h3 className="font-medium text-default-900 group-hover:text-primary">
                   {action.title}

@@ -103,4 +103,7 @@
 
   /* Focus */
   --color-focus: #006FEE;
+
+  /* Divider */
+  --color-divider: rgba(0, 0, 0, 0.15);
 }

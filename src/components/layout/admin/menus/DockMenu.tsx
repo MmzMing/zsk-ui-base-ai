@@ -200,11 +200,12 @@ export default function DockMenu({ className }: DockMenuProps) {
     },
     {
       icon: (
-        <span className="text-sm font-semibold">{formatTime(currentTime)}</span>
+        <span className="text-base font-semibold">{formatTime(currentTime)}</span>
       ),
       label: formatTime(currentTime),
       onClick: () => {},
-      noCircle: true
+      noCircle: true,
+      showDivider: true
     }
   ]
 

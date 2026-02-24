@@ -7,6 +7,7 @@ import { Outlet } from 'react-router-dom'
 import { ScrollShadow } from '@heroui/react'
 import FrontHeader from './FrontHeader'
 import FrontFooter from './FrontFooter'
+import ClickSpark from '@/components/ui/reactbits/ClickSpark'
 import { cn } from '@/utils'
 
 // 前台布局属性
@@ -36,26 +37,28 @@ export default function FrontLayout({
   className
 }: FrontLayoutProps) {
   return (
-    <div className={cn('min-h-screen flex flex-col bg-background', className)}>
-      {/* 顶部导航 */}
-      {showHeader && <FrontHeader />}
+    <ClickSpark sparkColor="#3b82f6" sparkSize={10} sparkRadius={15} duration={400}>
+      <div className={cn('min-h-screen flex flex-col bg-background', className)}>
+        {/* 顶部导航 */}
+        {showHeader && <FrontHeader />}
 
-      {/* 主内容区域 */}
-      <ScrollShadow className="flex-1">
-        <main className="flex-1">
-          <Outlet />
-        </main>
-      </ScrollShadow>
+        {/* 主内容区域 */}
+        <ScrollShadow className="flex-1">
+          <main className="flex-1">
+            <Outlet />
+          </main>
+        </ScrollShadow>
 
-      {/* 底部 */}
-      {showFooter && (
-        <FrontFooter
-          siteName={siteName}
-          siteDescription={siteDescription}
-          icp={icp}
-          policeIcp={policeIcp}
-        />
-      )}
-    </div>
+        {/* 底部 */}
+        {showFooter && (
+          <FrontFooter
+            siteName={siteName}
+            siteDescription={siteDescription}
+            icp={icp}
+            policeIcp={policeIcp}
+          />
+        )}
+      </div>
+    </ClickSpark>
   )
 }

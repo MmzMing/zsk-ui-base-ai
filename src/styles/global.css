@@ -241,6 +241,15 @@ textarea,
   box-shadow: var(--shadow-style);
 }
 
+/* 亮色模式下后台卡片、侧边栏、顶部导航背景色与搜索框一致 */
+:root:not(.dark) [data-admin-layout] .admin-card,
+:root:not(.dark) [data-admin-layout] .admin-border,
+:root:not(.dark) [data-admin-layout] header,
+:root:not(.dark) [data-admin-layout] aside,
+:root:not(.dark) [data-admin-layout] .bg-content1 {
+  background-color: var(--color-default-100);
+}
+
 [data-admin-layout] .admin-card-light {
   border: var(--border-style);
   border-radius: var(--theme-border-radius, var(--border-radius, 12px));

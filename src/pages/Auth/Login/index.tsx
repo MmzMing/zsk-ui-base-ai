@@ -11,13 +11,11 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold text-center">登录</h1>
         <form className="space-y-4">
           <Input
-            label="用户名"
-            placeholder="请输入用户名"
+            label="用户名/邮箱"
             variant="bordered"
           />
           <Input
             label="密码"
-            placeholder="请输入密码"
             type="password"
             variant="bordered"
           />

@@ -90,8 +90,12 @@ export function useTheme() {
     // 边框样式
     if (enableBorder) {
       root.style.setProperty('--border-style', '1px solid var(--color-divider)')
+      root.style.setProperty('--admin-border-width', '1px')
+      root.style.setProperty('--admin-border-color', 'var(--color-divider)')
     } else {
       root.style.setProperty('--border-style', 'none')
+      root.style.setProperty('--admin-border-width', '0px')
+      root.style.setProperty('--admin-border-color', 'transparent')
     }
 
     // 阴影样式

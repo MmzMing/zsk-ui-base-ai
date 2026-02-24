@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 // ===== 1. 故障文字组件 =====
 function GlitchText({ text, className = '' }: { text: string; className?: string }) {
   const [isGlitching, setIsGlitching] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
 
   // 随机触发故障效果
   useEffect(() => {
@@ -22,17 +23,27 @@ function GlitchText({ text, className = '' }: { text: string; className?: string
     return () => clearInterval(interval)
   }, [])
 
+  const active = isGlitching || isHovering
+
   return (
-    <div className={`relative inline-block ${className}`}>
+    <div 
+      className={`relative inline-block ${className} cursor-pointer`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       {/* 红色偏移层 */}
       <motion.div
         className="absolute inset-0 text-[#ff0040]"
         animate={
-          isGlitching
+          active
             ? { x: [-3, 3, -2, 2, 0], opacity: [0, 1, 0.8, 1, 0] }
             : { x: 0, opacity: 0 }
         }
-        transition={{ duration: 0.2 }}
+        transition={{ 
+          duration: 0.2,
+          repeat: isHovering ? Infinity : 0,
+          repeatDelay: 0.1
+        }}
       >
         {text}
       </motion.div>
@@ -41,11 +52,15 @@ function GlitchText({ text, className = '' }: { text: string; className?: string
       <motion.div
         className="absolute inset-0 text-[#00ffff]"
         animate={
-          isGlitching
+          active
             ? { x: [3, -3, 2, -2, 0], opacity: [0, 1, 0.8, 1, 0] }
             : { x: 0, opacity: 0 }
         }
-        transition={{ duration: 0.2 }}
+        transition={{ 
+          duration: 0.2,
+          repeat: isHovering ? Infinity : 0,
+          repeatDelay: 0.2
+        }}
       >
         {text}
       </motion.div>

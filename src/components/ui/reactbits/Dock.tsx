@@ -24,6 +24,8 @@ export type DockItemData = {
   className?: string
   /** 是否显示圆形背景 */
   noCircle?: boolean
+  /** 是否在左侧显示分隔线 */
+  showDivider?: boolean
 }
 
 // Dock 组件属性
@@ -99,13 +101,12 @@ function DockItem({
   const size = useSpring(targetSize, spring)
   const { actualTheme } = useTheme()
   const isDark = actualTheme === 'dark'
-  const itemBg = isDark ? 'bg-[#060010]' : 'bg-white'
-  const itemBorder = isDark ? 'border-neutral-600' : 'border-neutral-200'
+  const itemBg = 'bg-default-200/50 hover:bg-default-200'
 
   // 根据 noCircle 决定是否显示圆形背景
   const containerClass = noCircle
     ? `relative inline-flex items-center justify-center cursor-pointer ${className}`
-    : `relative inline-flex items-center justify-center rounded-full border-2 shadow-md cursor-pointer ${itemBg} ${itemBorder} ${className}`
+    : `relative inline-flex items-center justify-center rounded-full transition-colors cursor-pointer ${itemBg} ${className}`
 
   return (
     <motion.div
@@ -211,26 +212,30 @@ export default function Dock({
           isHovered.set(0)
           mouseX.set(Infinity)
         }}
-        className={`${className} absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-end w-fit gap-4 rounded-2xl border-2 pb-2 px-4 backdrop-blur-md ${dockBg} ${dockBorder}`}
+        className={`${className} absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center w-fit gap-4 rounded-2xl px-4 backdrop-blur-md ${dockBg}`}
         style={{ height: panelHeight }}
         role="toolbar"
         aria-label="应用 Dock"
       >
         {items.map((item, index) => (
-          <DockItem
-            key={index}
-            onClick={item.onClick}
-            className={item.className}
-            mouseX={mouseX}
-            spring={spring}
-            distance={distance}
-            magnification={magnification}
-            baseItemSize={baseItemSize}
-            noCircle={item.noCircle}
-          >
-            <DockIcon>{item.icon}</DockIcon>
-            <DockLabel>{item.label}</DockLabel>
-          </DockItem>
+          <div key={index} className="flex items-center gap-4">
+            {item.showDivider && (
+              <div className="w-px h-8 bg-divider/50 mx-1" />
+            )}
+            <DockItem
+              onClick={item.onClick}
+              className={item.className}
+              mouseX={mouseX}
+              spring={spring}
+              distance={distance}
+              magnification={magnification}
+              baseItemSize={baseItemSize}
+              noCircle={item.noCircle}
+            >
+              <DockIcon>{item.icon}</DockIcon>
+              <DockLabel>{item.label}</DockLabel>
+            </DockItem>
+          </div>
         ))}
       </motion.div>
     </motion.div>

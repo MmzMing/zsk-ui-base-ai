@@ -183,7 +183,10 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
   )
 
   return (
-    <div className={cn('flex flex-col h-screen', className)}>
+    <div 
+      data-admin-layout
+      className={cn('flex flex-col h-screen', className)}
+    >
       {/* 顶部导航栏 */}
       <header className="h-14 bg-content1 border-b border-divider flex items-center justify-between px-4">
         <div className="flex items-center">

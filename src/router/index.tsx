@@ -1,12 +1,13 @@
 /**
  * 路由配置
  */
-import { createBrowserRouter, type RouteObject, Outlet } from 'react-router-dom'
+import { createBrowserRouter, type RouteObject, Outlet, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
 // 布局组件
 import { AdminLayout } from '@/components/layout/admin'
 import { FrontLayout } from '@/components/layout/front'
+import { AuthLayout } from '@/components/layout/auth'
 import { useTheme } from '@/hooks/useTheme'
 
 // 懒加载页面组件
@@ -66,12 +67,17 @@ export const routes: RouteObject[] = [
 
       // 认证路由
       {
-        path: '/login',
-        element: withSuspense(LoginPage),
-      },
-      {
-        path: '/register',
-        element: withSuspense(RegisterPage),
+        element: <AuthLayout />,
+        children: [
+          {
+            path: '/login',
+            element: withSuspense(LoginPage),
+          },
+          {
+            path: '/register',
+            element: withSuspense(RegisterPage),
+          },
+        ],
       },
 
       // 后台管理路由
@@ -104,8 +110,12 @@ export const routes: RouteObject[] = [
 
       // 404
       {
-        path: '*',
+        path: '/404',
         element: withSuspense(NotFoundPage),
+      },
+      {
+        path: '*',
+        element: <Navigate to="/404" replace />,
       },
     ]
   }

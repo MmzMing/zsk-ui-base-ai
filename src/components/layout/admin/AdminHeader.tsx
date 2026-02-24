@@ -32,7 +32,8 @@ import {
   HiOutlineSun,
   HiOutlineAdjustments,
   HiOutlineHome,
-  HiOutlineChevronRight
+  HiOutlineChevronRight,
+  HiOutlineMenuAlt2
 } from 'react-icons/hi'
 import { Search, Menu } from 'lucide-react'
 import { useAppStore } from '@/stores/app'
@@ -61,8 +62,12 @@ interface AdminHeaderProps {
 export default function AdminHeader({ breadcrumbs = [], className }: AdminHeaderProps) {
   const navigate = useNavigate()
   const { userInfo, logout } = useUserStore()
-  const { adminSettings } = useAppStore()
-  const { themeMode, showBreadcrumb } = adminSettings
+  const { 
+    adminSettings, 
+    sidebarCollapsed, 
+    toggleSidebar 
+  } = useAppStore()
+  const { themeMode, showBreadcrumb, menuLayout } = adminSettings
   const { setThemeMode } = useTheme()
   const { isMobile } = useBreakpoint()
   const [searchValue, setSearchValue] = useState('')
@@ -284,11 +289,26 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
             exit={{ opacity: 0 }}
           >
             <Navbar
-              className={cn('h-14 px-4 border-b border-divider bg-content1', className)}
+              className={cn('h-14 px-4 border-b-[var(--admin-border-width)] border-divider bg-content1', className)}
               maxWidth="full"
             >
               {/* 左侧：移动端菜单按钮 + 面包屑 */}
-              <NavbarContent justify="start" className="flex-1 gap-0 md:gap-2">
+              <NavbarContent justify="start" className="flex-1 gap-1 md:gap-2">
+                {/* 侧边栏切换 - 仅在垂直布局且桌面端显示 */}
+                {menuLayout === 'vertical' && (
+                  <NavbarItem className="hidden md:flex">
+                    <Button
+                      variant="light"
+                      isIconOnly
+                      size="sm"
+                      onPress={toggleSidebar}
+                      className="text-default-500"
+                    >
+                      <HiOutlineMenuAlt2 className="text-xl" />
+                    </Button>
+                  </NavbarItem>
+                )}
+
                 {showBreadcrumb && breadcrumbs.length > 0 && (
                   <div className="flex items-center gap-1 text-sm">
                     <Button

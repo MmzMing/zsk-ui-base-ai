@@ -125,32 +125,6 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
     }
   }, [navigate])
 
-  // 渲染顶部一级菜单
-  const renderTopMenu = () => (
-    <div className="flex items-center h-full gap-1">
-      {sortedMenus.map((menu) => {
-        const isActive = activeModule === menu.key
-        const Icon = menu.icon
-        
-        return (
-          <Button
-            key={menu.key}
-            variant={isActive ? 'flat' : 'light'}
-            color={isActive ? 'primary' : 'default'}
-            className={cn(
-              'h-10 px-3 gap-2 min-w-0',
-              isActive && 'bg-primary/10 font-medium'
-            )}
-            onPress={() => handleModuleClick(menu)}
-          >
-            {Icon && <Icon className="text-lg flex-shrink-0" />}
-            <span className="hidden xl:inline truncate">{menu.label}</span>
-          </Button>
-        )
-      })}
-    </div>
-  )
-
   // 默认 Logo
   const defaultLogo = (
     <div className="flex items-center gap-2">
@@ -160,16 +134,16 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
   )
 
   return (
-    <div className={cn('flex flex-col h-screen', className)}>
+    <div 
+      data-admin-layout
+      className={cn('flex flex-col h-screen', className)}
+    >
       {/* 顶部导航栏 */}
       <header className="h-14 bg-content1 border-b border-divider flex items-center justify-between px-4">
         <div className="flex items-center">
           <div className="flex-shrink-0 mr-4">
             {logo || defaultLogo}
           </div>
-          <nav className="hidden md:flex">
-            {renderTopMenu()}
-          </nav>
         </div>
         <div className="flex items-center gap-2">
           {extra}

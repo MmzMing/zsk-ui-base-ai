@@ -16,7 +16,7 @@ import {
 import { useAppStore } from '@/stores/app'
 import { ADMIN_MENUS, getSortedMenus, type MenuItem } from '@/constants/menu'
 import { cn } from '@/utils'
-
+import { SiteLogo } from '@/components/ui/SiteLogo'
 // 子菜单项组件
 function SubMenuItem({ 
   item, 
@@ -279,37 +279,13 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
       variants={sidebarVariants}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       className={cn(
-        'h-screen bg-content1 border-r border-divider flex flex-col',
+        'h-screen bg-content1 border-r-[var(--admin-border-width)] border-divider flex flex-col',
         className
       )}
     >
       {/* Logo 区域 */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-divider">
-        <AnimatePresence mode="wait">
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center"
-            >
-              <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <Button
-          isIconOnly
-          variant="light"
-          size="sm"
-          onPress={toggleSidebar}
-          className="text-default-500"
-        >
-          {collapsed ? (
-            <HiOutlineChevronRight className="text-lg" />
-          ) : (
-            <HiOutlineChevronLeft className="text-lg" />
-          )}
-        </Button>
+      <div className="h-14 flex items-center justify-center px-4 border-b-[var(--admin-border-width)] border-divider">
+        <SiteLogo size="sm" />
       </div>
 
       {/* 菜单区域 */}
