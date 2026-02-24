@@ -13,6 +13,7 @@
     "@heroui/react": "^2.8.8",
     "@heroui/theme": "^2.4.26",
     "@heroui/toast": "^2.0.21",
+    "@marsidev/react-turnstile": "^1.4.2",
     "@motionone/utils": "^10.18.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",

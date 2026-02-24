@@ -68,10 +68,10 @@ function SlidingNavItem({ item, isActive, onClick }: SlidingNavItemProps) {
       onClick={onClick}
       className={cn(
         'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors',
-        isActive ? 'text-primary' : 'text-default-600 hover:text-default-900'
+        isActive ? '!text-default-900 font-bold' : '!text-default-600 hover:!text-default-900'
       )}
     >
-      {Icon && <Icon className="text-base" />}
+      {Icon && <Icon className="text-base text-inherit" />}
       {item.label}
     </Link>
   )
@@ -93,12 +93,12 @@ function CollapsedNavItem({ item, isActive, onClick }: CollapsedNavItemProps) {
       className={cn(
         'relative flex items-center justify-center w-8 h-8 rounded-full transition-colors',
         isActive
-          ? 'bg-primary/20 text-primary'
-          : 'text-default-600 hover:bg-default-200/50 hover:text-default-900'
+          ? 'bg-default-200 !text-default-900'
+          : '!text-default-600 hover:bg-default-200/50 hover:!text-default-900'
       )}
       title={item.label}
     >
-      {Icon && <Icon className="text-base" />}
+      {Icon && <Icon className="text-base text-inherit" />}
     </Link>
   )
 }
@@ -277,7 +277,7 @@ export default function FrontHeader({
                 <div className="w-[200px] flex-shrink-0">
                   <Link
                     to="/"
-                    className="relative flex items-center gap-2 text-xl font-bold text-default-900"
+                    className="relative flex items-center gap-2 text-xl font-bold !text-default-900"
                     onMouseEnter={() => setLogoHovered(true)}
                     onMouseLeave={() => setLogoHovered(false)}
                   >
@@ -291,7 +291,7 @@ export default function FrontHeader({
                           animate={{ width: 'auto', opacity: 1 }}
                           exit={{ width: 0, opacity: 0 }}
                           transition={{ duration: 0.25, ease: 'easeOut' }}
-                          className="overflow-hidden whitespace-nowrap bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent"
+                          className="overflow-hidden whitespace-nowrap !text-default-900"
                         >
                           {logoText}
                         </motion.span>
@@ -308,7 +308,7 @@ export default function FrontHeader({
                 >
                   {/* 滑动指示器 */}
                   <motion.div
-                    className="absolute -bottom-1 h-0.5 bg-primary rounded-full"
+                    className="absolute -bottom-1 h-0.5 bg-default-900 rounded-full"
                     initial={false}
                     animate={{
                       left: indicatorStyle.left,
@@ -339,6 +339,7 @@ export default function FrontHeader({
                       variant="light" 
                       isIconOnly
                       onPress={() => setIsSearchOpen(true)}
+                      className="!text-default-600 hover:!text-default-900"
                     >
                       <HiOutlineSearch className="text-lg" />
                     </Button>
@@ -349,7 +350,7 @@ export default function FrontHeader({
                   {isLoggedIn ? (
                     <Dropdown placement="bottom-end">
                       <DropdownTrigger>
-                        <Button variant="light" className="gap-2 px-2">
+                        <Button variant="light" className="gap-2 px-2 !text-default-600 hover:!text-default-900">
                           <Avatar
                             name={userInfo?.name || '用户'}
                             size="sm"
@@ -361,7 +362,7 @@ export default function FrontHeader({
                       <UserMenuContent />
                     </Dropdown>
                   ) : (
-                    <Button variant="light" size="sm" as={Link} to="/login">
+                    <Button variant="light" size="sm" as={Link} to="/login" className="!text-default-600 hover:!text-default-900">
                       登录
                     </Button>
                   )}
@@ -370,7 +371,7 @@ export default function FrontHeader({
                   <Button
                     variant="light"
                     isIconOnly
-                    className="md:hidden"
+                    className="md:hidden !text-default-600 hover:!text-default-900"
                     onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
                   >
                     {mobileMenuOpen ? (
@@ -414,7 +415,7 @@ export default function FrontHeader({
                     animate={{ width: 'auto', opacity: 1, x: 0 }}
                     exit={{ width: 0, opacity: 0, x: -10 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-sm font-medium bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent"
+                    className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-sm font-medium !text-default-900"
                   >
                     {logoText}
                   </motion.span>
@@ -460,30 +461,32 @@ export default function FrontHeader({
 
                 <AnimatedThemeToggle className="w-8 h-8 !min-w-8 rounded-full" />
 
-                {/* 登录按钮/用户菜单 - 收缩状态 */}
-                {isScrolled && isLoggedIn ? (
-                  <Dropdown placement="bottom-end">
-                    <DropdownTrigger>
-                      <Button variant="light" isIconOnly size="sm" className="min-w-8 w-8 h-8 rounded-full">
-                        <Avatar
-                          name={userInfo?.name || '用户'}
-                          size="sm"
-                          className="w-7 h-7"
-                        />
-                      </Button>
-                    </DropdownTrigger>
-                    <UserMenuContent />
-                  </Dropdown>
-                ) : (
-                  <Button
-                    variant="light"
-                    size="sm"
-                    as={Link}
-                    to="/login"
-                    className="min-w-14 h-8 rounded-full text-xs"
-                  >
-                    登录
-                  </Button>
+                {/* 登录按钮/用户菜单 - 收缩状态 (非移动端显示，移动端统一放在菜单中) */}
+                {!isMobile && (
+                  isScrolled && isLoggedIn ? (
+                    <Dropdown placement="bottom-end">
+                      <DropdownTrigger>
+                        <Button variant="light" isIconOnly size="sm" className="min-w-8 w-8 h-8 rounded-full">
+                          <Avatar
+                            name={userInfo?.name || '用户'}
+                            size="sm"
+                            className="w-7 h-7"
+                          />
+                        </Button>
+                      </DropdownTrigger>
+                      <UserMenuContent />
+                    </Dropdown>
+                  ) : (
+                    <Button
+                      variant="light"
+                      size="sm"
+                      as={Link}
+                      to="/login"
+                      className="min-w-14 h-8 rounded-full text-xs !text-default-600 hover:!text-default-900"
+                    >
+                      登录
+                    </Button>
+                  )
                 )}
 
                 {/* 移动端菜单按钮 */}
@@ -532,11 +535,11 @@ export default function FrontHeader({
                       className={cn(
                         'px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
                         activeIndex === index
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-default-600 hover:bg-default-100'
+                          ? 'bg-default-100 !text-default-900 font-bold'
+                          : '!text-default-600 hover:bg-default-100'
                       )}
                     >
-                      {Icon && <Icon className="text-base" />}
+                      {Icon && <Icon className="text-base text-inherit" />}
                       {item.label}
                     </Link>
                   )
@@ -600,6 +603,7 @@ export default function FrontHeader({
                     as={Link}
                     to="/login"
                     onPress={() => setMobileMenuOpen(false)}
+                    className="!text-default-600 hover:!text-default-900"
                   >
                     登录
                   </Button>

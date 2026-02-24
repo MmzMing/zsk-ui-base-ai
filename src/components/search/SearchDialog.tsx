@@ -65,7 +65,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
               />
               
               {/* 装饰性图标 */}
-              <div className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400 group-focus-within:text-default-900 transition-colors">
                 <HiOutlineSearch size={20} />
               </div>
             </div>

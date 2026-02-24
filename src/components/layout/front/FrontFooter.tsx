@@ -109,8 +109,8 @@ export default function FrontFooter({
   const renderLink = (link: FooterLink) => {
     const content = (
       <>
-        {link.icon && <span className="opacity-60">{link.icon}</span>}
-        <span>{link.label}</span>
+        {link.icon && <span className="opacity-60 text-inherit">{link.icon}</span>}
+        <span className="text-inherit">{link.label}</span>
       </>
     )
 
@@ -120,7 +120,7 @@ export default function FrontFooter({
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-default-500 hover:text-primary transition-colors text-sm py-1"
+          className="flex items-center gap-2 !text-default-500 hover:!text-default-900 transition-colors text-sm py-1 !no-underline"
         >
           {content}
         </a>
@@ -130,7 +130,7 @@ export default function FrontFooter({
     return (
       <Link
         to={link.href}
-        className="flex items-center gap-2 text-default-500 hover:text-primary transition-colors text-sm py-1"
+        className="flex items-center gap-2 !text-default-500 hover:!text-default-900 transition-colors text-sm py-1 !no-underline"
       >
         {content}
       </Link>
@@ -151,9 +151,9 @@ export default function FrontFooter({
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 mb-12">
             {/* 品牌信息 */}
             <div className="max-w-sm">
-              <Link to="/" className="inline-flex items-center gap-3 mb-4">
+              <Link to="/" className="inline-flex items-center gap-3 mb-4 !no-underline">
                 <SiteLogo size="lg" />
-                <span className="text-2xl font-bold text-default-900">
+                <span className="text-2xl font-bold !text-default-900">
                   {siteName}
                 </span>
               </Link>
@@ -165,13 +165,13 @@ export default function FrontFooter({
               <div className="flex flex-col gap-3">
                 <a
                   href="mailto:contact@example.com"
-                  className="flex items-center gap-3 text-sm text-default-600 hover:text-primary transition-colors group"
+                  className="flex items-center gap-3 text-sm !text-default-600 hover:!text-default-900 transition-colors group !no-underline"
                 >
-                  <Mail className="w-5 h-5 text-default-400 group-hover:text-primary transition-colors" />
-                  <span>contact@example.com</span>
+                  <Mail className="w-5 h-5 !text-default-400 group-hover:!text-default-900 transition-colors" />
+                  <span className="text-inherit">contact@example.com</span>
                 </a>
                 <div className="flex items-center gap-3 text-sm text-default-600">
-                  <MapPin className="w-5 h-5 text-default-400" />
+                  <MapPin className="w-5 h-5 !text-default-400" />
                   <span>中国 · 北京</span>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function FrontFooter({
                   viewport={{ once: true }}
                 >
                   <h4 className="font-semibold text-default-900 mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 rounded-full bg-primary" />
+                    <span className="w-1 h-4 rounded-full bg-default-900" />
                     {section.title}
                   </h4>
                   <nav className="flex flex-col gap-1">
@@ -216,10 +216,10 @@ export default function FrontFooter({
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="text-default-400 hover:text-primary transition-all"
+                  className="!text-default-400 hover:!text-default-900 transition-all !no-underline"
                   title={social.label}
                 >
-                  {social.icon}
+                  <span className="text-inherit">{social.icon}</span>
                 </motion.a>
               ))}
             </div>
@@ -231,14 +231,14 @@ export default function FrontFooter({
                   href="https://beian.miit.gov.cn/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
+                  className="hover:!text-default-900 transition-colors !no-underline !text-default-500"
                 >
                   {icp}
                 </a>
               )}
               <a
                 href="/rss"
-                className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                className="flex items-center gap-1.5 hover:!text-default-900 transition-colors !no-underline !text-default-500"
               >
                 <Rss className="w-4 h-4" />
                 <span>RSS</span>
@@ -260,7 +260,7 @@ export default function FrontFooter({
                   href="https://beian.miit.gov.cn/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
+                  className="hover:!text-default-900 transition-colors !no-underline !text-default-400"
                 >
                   {icp}
                 </a>
@@ -271,7 +271,7 @@ export default function FrontFooter({
                   href="https://www.gov.cn/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
+                  className="hover:!text-default-900 transition-colors !no-underline !text-default-400"
                 >
                   {policeIcp}
                 </a>

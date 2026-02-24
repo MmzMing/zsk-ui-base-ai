@@ -101,7 +101,7 @@ export function AnimatedThemeToggle({
         'bg-default-100 hover:bg-default-200',
         'text-default-600 hover:text-default-900',
         'transition-colors duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-primary/50',
+        'focus:outline-none focus:ring-2 focus:ring-default-500/50',
         className
       )}
       aria-label={isDark ? '切换到亮色主题' : '切换到暗色主题'}
