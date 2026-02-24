@@ -4,3 +4,4 @@
 
 export { useTheme } from './useTheme'
 export { useBreakpoint } from './useBreakpoint'
+export { useScrollPosition } from './useScrollPosition'
