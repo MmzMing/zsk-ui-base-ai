@@ -67,11 +67,11 @@ function SlidingNavItem({ item, isActive, onClick }: SlidingNavItemProps) {
       to={item.href}
       onClick={onClick}
       className={cn(
-        'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors',
+        'relative flex items-center gap-1.5 px-3 py-2 text-base font-medium transition-colors',
         isActive ? '!text-default-900 font-bold' : '!text-default-600 hover:!text-default-900'
       )}
     >
-      {Icon && <Icon className="text-base text-inherit" />}
+      {Icon && <Icon className="text-lg text-inherit" />}
       {item.label}
     </Link>
   )
@@ -223,9 +223,12 @@ export default function FrontHeader({
     if (targetButton) {
       const navRect = navRef.current.getBoundingClientRect()
       const btnRect = targetButton.getBoundingClientRect()
+      // 将指示器宽度进一步缩小（30%）并居中对齐
+      const width = btnRect.width * 0.3
+      const left = (btnRect.left - navRect.left) + (btnRect.width * 0.35)
       setIndicatorStyle({
-        left: btnRect.left - navRect.left,
-        width: btnRect.width
+        left,
+        width
       })
     }
   }, [isScrolled])
@@ -308,7 +311,7 @@ export default function FrontHeader({
                 >
                   {/* 滑动指示器 */}
                   <motion.div
-                    className="absolute -bottom-1 h-0.5 bg-default-900 rounded-full"
+                    className="absolute -bottom-1 h-1 bg-default-900 rounded-full"
                     initial={false}
                     animate={{
                       left: indicatorStyle.left,
@@ -356,13 +359,13 @@ export default function FrontHeader({
                             size="sm"
                             className="cursor-pointer"
                           />
-                          <span className="hidden sm:inline text-sm">{userInfo?.name || '用户'}</span>
+                          <span className="hidden sm:inline text-base">{userInfo?.name || '用户'}</span>
                         </Button>
                       </DropdownTrigger>
                       <UserMenuContent />
                     </Dropdown>
                   ) : (
-                    <Button variant="light" size="sm" as={Link} to="/login" className="!text-default-600 hover:!text-default-900">
+                    <Button variant="light" size="md" as={Link} to="/login" className="!text-default-600 hover:!text-default-900">
                       登录
                     </Button>
                   )}
@@ -415,7 +418,7 @@ export default function FrontHeader({
                     animate={{ width: 'auto', opacity: 1, x: 0 }}
                     exit={{ width: 0, opacity: 0, x: -10 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-sm font-medium !text-default-900"
+                    className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-base font-medium !text-default-900"
                   >
                     {logoText}
                   </motion.span>
@@ -533,7 +536,7 @@ export default function FrontHeader({
                       to={item.href}
                       onClick={() => handleNavClick(index)}
                       className={cn(
-                        'px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
+                        'px-4 py-3 rounded-lg text-base font-medium transition-colors flex items-center gap-2',
                         activeIndex === index
                           ? 'bg-default-100 !text-default-900 font-bold'
                           : '!text-default-600 hover:bg-default-100'
@@ -555,8 +558,8 @@ export default function FrontHeader({
                         size="sm"
                       />
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-default-900">{userInfo?.name || '用户'}</span>
-                        <span className="text-xs text-default-500">{userInfo?.email || '暂无邮箱'}</span>
+                        <span className="text-base font-bold text-default-900">{userInfo?.name || '用户'}</span>
+                        <span className="text-sm text-default-500">{userInfo?.email || '暂无邮箱'}</span>
                       </div>
                     </div>
                     <Button
