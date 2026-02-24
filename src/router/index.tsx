@@ -10,6 +10,7 @@ import { FrontLayout } from '@/components/layout/front'
 
 // 懒加载页面组件
 const HomePage = lazy(() => import('@/pages/Home'))
+const TestPage = lazy(() => import('@/pages/Test'))
 const LoginPage = lazy(() => import('@/pages/Auth/Login'))
 const RegisterPage = lazy(() => import('@/pages/Auth/Register'))
 const NotFoundPage = lazy(() => import('@/pages/NotFound'))
@@ -45,6 +46,10 @@ export const routes: RouteObject[] = [
       {
         index: true,
         element: withSuspense(HomePage),
+      },
+      {
+        path: 'test',
+        element: withSuspense(TestPage),
       },
     ],
   },

@@ -26,7 +26,8 @@ import {
   HiOutlineUser,
   HiOutlineLogout,
   HiOutlineCog,
-  HiOutlineViewGrid
+  HiOutlineViewGrid,
+  HiOutlineBeaker
 } from 'react-icons/hi'
 import { cn } from '@/utils'
 import { AnimatedThemeToggle } from '@/components/ui/AnimatedThemeToggle'
@@ -47,6 +48,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: '首页', href: '/', icon: HiOutlineHome },
   { label: '文章', href: '/articles', icon: HiOutlineDocumentText },
   { label: '分类', href: '/categories', icon: HiOutlineTag },
+  { label: '测试', href: '/test', icon: HiOutlineBeaker },
   { label: '关于', href: '/about', icon: HiOutlineUser }
 ]
 
