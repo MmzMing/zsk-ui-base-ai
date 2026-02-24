@@ -1,27 +1,32 @@
 /**
  * 前台底部组件
- * 包含网站信息、链接、版权声明等
+ * 美观、简约的页脚设计
  */
 
 import { Link } from 'react-router-dom'
 import { Divider } from '@heroui/react'
-import {
-  HiOutlineRss,
-  HiOutlineMail,
-  HiOutlineLocationMarker
-} from 'react-icons/hi'
-import {
-  FaGithub,
-  FaTwitter,
-  FaWeibo,
-  FaZhihu
-} from 'react-icons/fa'
+import { motion } from 'framer-motion'
+import { 
+  Mail, 
+  MapPin, 
+  Rss, 
+  Github,
+  Twitter,
+  BookOpen,
+  FileText,
+  Compass,
+  Info,
+  Shield,
+  Send
+} from 'lucide-react'
 import { cn } from '@/utils'
+import { SiteLogo } from '@/components/ui/SiteLogo'
 
 // 底部链接项类型
 interface FooterLink {
   label: string
   href: string
+  icon?: React.ReactNode
   external?: boolean
 }
 
@@ -41,39 +46,35 @@ interface SocialLink {
 // 默认底部链接
 const FOOTER_SECTIONS: FooterSection[] = [
   {
-    title: '导航',
+    title: '浏览',
     links: [
-      { label: '首页', href: '/' },
-      { label: '文章', href: '/articles' },
-      { label: '分类', href: '/categories' },
-      { label: '关于', href: '/about' }
+      { label: '首页', href: '/', icon: <BookOpen className="w-4 h-4" /> },
+      { label: '文章', href: '/articles', icon: <FileText className="w-4 h-4" /> },
+      { label: '分类', href: '/categories', icon: <Compass className="w-4 h-4" /> },
+      { label: '关于', href: '/about', icon: <Info className="w-4 h-4" /> }
     ]
   },
   {
-    title: '资源',
+    title: '法律',
     links: [
-      { label: 'API 文档', href: '/docs/api', external: true },
-      { label: '开发指南', href: '/docs/guide', external: true },
-      { label: '更新日志', href: '/changelog' }
+      { label: '隐私政策', href: '/privacy', icon: <Shield className="w-4 h-4" /> },
+      { label: '服务条款', href: '/terms', icon: <FileText className="w-4 h-4" /> }
     ]
   },
   {
-    title: '关于',
+    title: '联系',
     links: [
-      { label: '关于我们', href: '/about' },
-      { label: '联系方式', href: '/contact' },
-      { label: '隐私政策', href: '/privacy' },
-      { label: '服务条款', href: '/terms' }
+      { label: '反馈建议', href: '/feedback', icon: <Send className="w-4 h-4" /> },
+      { label: '广告合作', href: '/cooperation', icon: <Mail className="w-4 h-4" /> }
     ]
   }
 ]
 
 // 社交链接
 const SOCIAL_LINKS: SocialLink[] = [
-  { icon: <FaGithub />, href: 'https://github.com', label: 'GitHub' },
-  { icon: <FaTwitter />, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: <FaWeibo />, href: 'https://weibo.com', label: '微博' },
-  { icon: <FaZhihu />, href: 'https://zhihu.com', label: '知乎' }
+  { icon: <Github className="w-5 h-5" />, href: 'https://github.com', label: 'GitHub' },
+  { icon: <Twitter className="w-5 h-5" />, href: 'https://twitter.com', label: 'Twitter' },
+  { icon: <Mail className="w-5 h-5" />, href: 'mailto:contact@example.com', label: 'Email' }
 ]
 
 // 前台底部属性
@@ -88,6 +89,8 @@ interface FrontFooterProps {
   siteDescription?: string
   /** 备案号 */
   icp?: string
+  /** 公安备案号 */
+  policeIcp?: string
   className?: string
 }
 
@@ -95,23 +98,31 @@ export default function FrontFooter({
   sections = FOOTER_SECTIONS,
   socialLinks = SOCIAL_LINKS,
   siteName = '知识库小破站',
-  siteDescription = '分享知识，记录成长',
+  siteDescription = '分享知识，记录成长。一个专注于技术分享与学习的知识平台。',
   icp = '',
+  policeIcp = '',
   className
 }: FrontFooterProps) {
   const currentYear = new Date().getFullYear()
 
   // 渲染链接
   const renderLink = (link: FooterLink) => {
+    const content = (
+      <>
+        {link.icon && <span className="opacity-60">{link.icon}</span>}
+        <span>{link.label}</span>
+      </>
+    )
+
     if (link.external) {
       return (
         <a
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-default-500 hover:text-primary transition-colors text-sm"
+          className="flex items-center gap-2 text-default-500 hover:text-primary transition-colors text-sm py-1"
         >
-          {link.label}
+          {content}
         </a>
       )
     }
@@ -119,9 +130,9 @@ export default function FrontFooter({
     return (
       <Link
         to={link.href}
-        className="text-default-500 hover:text-primary transition-colors text-sm"
+        className="flex items-center gap-2 text-default-500 hover:text-primary transition-colors text-sm py-1"
       >
-        {link.label}
+        {content}
       </Link>
     )
   }
@@ -129,95 +140,148 @@ export default function FrontFooter({
   return (
     <footer
       className={cn(
-        'w-full border-t border-divider bg-content1',
+        'w-full bg-background border-t border-divider/50',
         className
       )}
     >
       <div className="container mx-auto px-4">
         {/* 主要内容区域 */}
-        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* 网站信息 */}
-          <div className="lg:col-span-2">
-            <Link to="/" className="inline-block mb-4">
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {siteName}
-              </span>
-            </Link>
-            <p className="text-default-500 text-sm mb-4 max-w-xs">
-              {siteDescription}
-            </p>
+        <div className="py-16">
+          {/* 顶部品牌区域 */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 mb-12">
+            {/* 品牌信息 */}
+            <div className="max-w-sm">
+              <Link to="/" className="inline-flex items-center gap-3 mb-4">
+                <SiteLogo size="lg" />
+                <span className="text-2xl font-bold text-default-900">
+                  {siteName}
+                </span>
+              </Link>
+              <p className="text-default-500 text-sm leading-relaxed mb-6">
+                {siteDescription}
+              </p>
 
-            {/* 联系信息 */}
-            <div className="flex flex-col gap-2 text-sm text-default-500">
-              <div className="flex items-center gap-2">
-                <HiOutlineMail className="text-lg" />
-                <span>contact@example.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <HiOutlineLocationMarker className="text-lg" />
-                <span>中国</span>
+              {/* 联系信息 */}
+              <div className="flex flex-col gap-3">
+                <a
+                  href="mailto:contact@example.com"
+                  className="flex items-center gap-3 text-sm text-default-600 hover:text-primary transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-default-100 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <span>contact@example.com</span>
+                </a>
+                <div className="flex items-center gap-3 text-sm text-default-600">
+                  <div className="w-8 h-8 rounded-lg bg-default-100 flex items-center justify-center">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <span>中国 · 北京</span>
+                </div>
               </div>
             </div>
 
-            {/* 社交链接 */}
-            <div className="flex items-center gap-3 mt-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-default-100 text-default-500 hover:bg-primary hover:text-white transition-colors"
-                  title={social.label}
+            {/* 链接分组 */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 lg:gap-16">
+              {sections.map((section, sectionIndex) => (
+                <motion.div
+                  key={section.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: sectionIndex * 0.1 }}
+                  viewport={{ once: true }}
                 >
-                  {social.icon}
-                </a>
+                  <h4 className="font-semibold text-default-900 mb-4 flex items-center gap-2">
+                    <span className="w-1 h-4 rounded-full bg-primary" />
+                    {section.title}
+                  </h4>
+                  <nav className="flex flex-col gap-1">
+                    {section.links.map((link) => (
+                      <div key={link.label}>
+                        {renderLink(link)}
+                      </div>
+                    ))}
+                  </nav>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          {/* 链接分组 */}
-          {sections.map((section) => (
-            <div key={section.title}>
-              <h4 className="font-semibold text-default-900 mb-4">{section.title}</h4>
-              <nav className="flex flex-col gap-2">
-                {section.links.map((link) => (
-                  <div key={link.label}>
-                    {renderLink(link)}
-                  </div>
-                ))}
-              </nav>
+          {/* 社交链接和订阅 */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pt-8 border-t border-divider/50">
+            {/* 社交链接 */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-default-500 mr-2">关注我们</span>
+              {socialLinks.map((social) => (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-default-100 text-default-600 hover:bg-primary hover:text-white transition-colors"
+                  title={social.label}
+                >
+                  {social.icon}
+                </motion.a>
+              ))}
             </div>
-          ))}
+
+            {/* 右侧信息 */}
+            <div className="flex items-center gap-4 text-sm text-default-500">
+              {icp && (
+                <a
+                  href="https://beian.miit.gov.cn/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  {icp}
+                </a>
+              )}
+              <a
+                href="/rss"
+                className="flex items-center gap-1.5 hover:text-primary transition-colors"
+              >
+                <Rss className="w-4 h-4" />
+                <span>RSS</span>
+              </a>
+            </div>
+          </div>
         </div>
 
-        <Divider />
-
         {/* 底部版权区域 */}
-        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-default-500">
-            &copy; {currentYear} {siteName}. 保留所有权利。
-          </p>
+        <Divider className="mb-0" />
 
-          <div className="flex items-center gap-4 text-sm text-default-500">
-            {icp && (
-              <a
-                href="https://beian.miit.gov.cn/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary transition-colors"
-              >
-                {icp}
-              </a>
-            )}
-            <a
-              href="/rss"
-              className="flex items-center gap-1 hover:text-primary transition-colors"
-            >
-              <HiOutlineRss className="text-lg" />
-              <span>RSS</span>
-            </a>
-          </div>
+        <div className="py-4 flex flex-col items-center justify-center gap-2 text-sm text-default-500">
+          <span>&copy; {currentYear} {siteName}</span>
+          {/* 备案信息 */}
+          {(icp || policeIcp) && (
+            <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-default-400">
+              {icp && (
+                <a
+                  href="https://beian.miit.gov.cn/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  {icp}
+                </a>
+              )}
+              {icp && policeIcp && <span>·</span>}
+              {policeIcp && (
+                <a
+                  href="https://www.gov.cn/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  {policeIcp}
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </footer>

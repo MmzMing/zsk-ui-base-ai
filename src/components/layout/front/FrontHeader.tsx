@@ -4,7 +4,7 @@
  * 支持 Logo 悬停展开和滚动分裂收缩动效
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@heroui/react'
@@ -115,9 +115,19 @@ export default function FrontHeader({
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [logoHovered, setLogoHovered] = useState(false)
+  const [logoCollapsedHovered, setLogoCollapsedHovered] = useState(false)
 
   // 滚动监听
   const { isScrolled } = useScrollPosition({ threshold: scrollThreshold })
+
+  // 检测是否为移动端 (屏幕宽度 < 768px)
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    return window.innerWidth < 768
+  }, [])
+
+  // 是否显示分裂样式：移动端始终显示分裂样式，或滚动超过阈值且非移动端
+  const isSplitMode = isMobile || isScrolled
 
   // 根据路径获取激活索引
   const getActiveIndex = useCallback(() => {
@@ -140,8 +150,8 @@ export default function FrontHeader({
       const navRect = navRef.current.getBoundingClientRect()
       const btnRect = targetButton.getBoundingClientRect()
       setIndicatorStyle({
-        left: btnRect.left - navRect.left - 6,
-        width: btnRect.width + 12
+        left: btnRect.left - navRect.left,
+        width: btnRect.width
       })
     }
   }, [isScrolled])
@@ -179,7 +189,7 @@ export default function FrontHeader({
     >
       {/* 展开状态 - 单一容器 */}
       <AnimatePresence mode="wait">
-        {!isScrolled ? (
+        {!isSplitMode ? (
           <motion.div
             key="expanded-header"
             initial={{ opacity: 0, y: -10 }}
@@ -295,11 +305,28 @@ export default function FrontHeader({
               initial={{ scale: 0.8, x: -20 }}
               animate={{ scale: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-background/90 backdrop-blur-xl border border-divider/50 shadow-lg"
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-background/90 backdrop-blur-xl border border-divider/50 shadow-lg cursor-pointer"
+              onMouseEnter={() => setLogoCollapsedHovered(true)}
+              onMouseLeave={() => setLogoCollapsedHovered(false)}
             >
               <Link to="/" className="flex items-center justify-center">
                 <SiteLogo size="sm" />
               </Link>
+
+              {/* 悬停展开的文字 */}
+              <AnimatePresence>
+                {logoCollapsedHovered && (
+                  <motion.span
+                    initial={{ width: 0, opacity: 0, x: -10 }}
+                    animate={{ width: 'auto', opacity: 1, x: 0 }}
+                    exit={{ width: 0, opacity: 0, x: -10 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-sm font-medium bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent"
+                  >
+                    {logoText}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* 右侧椭圆形容器 - 导航 + 工具栏 */}
@@ -338,6 +365,17 @@ export default function FrontHeader({
                 )}
 
                 <AnimatedThemeToggle className="w-8 h-8 !min-w-8 rounded-full" />
+
+                {/* 登录按钮 - 收缩状态始终显示 */}
+                <Button
+                  variant="light"
+                  size="sm"
+                  as={Link}
+                  to="/login"
+                  className="min-w-14 h-8 rounded-full text-xs"
+                >
+                  登录
+                </Button>
 
                 {/* 移动端菜单按钮 */}
                 <Button
