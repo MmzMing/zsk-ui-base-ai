@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useTheme } from '@/hooks/useTheme'
@@ -32,6 +33,7 @@ import {
 } from 'react-icons/hi'
 import ThemeDrawer from '../ThemeDrawer'
 import { Badge, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Divider } from '@heroui/react'
+import { LocaleSwitcher } from '@/components/ui/LocaleSwitcher'
 
 // Dock 菜单组件属性
 interface DockMenuProps {
@@ -40,6 +42,7 @@ interface DockMenuProps {
 }
 
 export default function DockMenu({ className }: DockMenuProps) {
+  const { t, i18n } = useTranslation(['navigation', 'common'])
   const navigate = useNavigate()
   const { toggleFullscreen, isFullscreen, adminSettings } = useAppStore()
   const { themeMode } = adminSettings
@@ -64,14 +67,12 @@ export default function DockMenu({ className }: DockMenuProps) {
 
   // 格式化时间
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('zh-CN', { 
+    return date.toLocaleTimeString(i18n.language, { 
       hour: '2-digit', 
       minute: '2-digit',
       second: '2-digit'
     })
   }
-
-
 
   // 切换菜单面板
   const toggleMenuPanel = useCallback(() => {
@@ -102,9 +103,9 @@ export default function DockMenu({ className }: DockMenuProps) {
   // 获取主题标签
   const getThemeLabel = () => {
     switch (themeMode) {
-      case 'light': return '浅色'
-      case 'dark': return '深色'
-      default: return '自动'
+      case 'light': return t('common:theme.light')
+      case 'dark': return t('common:theme.dark')
+      default: return t('common:theme.system')
     }
   }
 
@@ -118,7 +119,7 @@ export default function DockMenu({ className }: DockMenuProps) {
   const dockItems: DockItemData[] = [
     {
       icon: <HiOutlineMenuAlt2 className="text-xl" />,
-      label: '菜单',
+      label: t('menu.admin'),
       onClick: toggleMenuPanel
     },
     {
@@ -127,8 +128,13 @@ export default function DockMenu({ className }: DockMenuProps) {
       onClick: toggleTheme
     },
     {
+      icon: <LocaleSwitcher />,
+      label: t('menu.language'),
+      onClick: () => {}
+    },
+    {
       icon: <HiOutlineColorSwatch className="text-xl" />,
-      label: '主题',
+      label: t('common:actions.themeSettings'),
       onClick: () => setThemeDrawerOpen(true)
     },
     {
@@ -148,17 +154,19 @@ export default function DockMenu({ className }: DockMenuProps) {
               key="profile"
               startContent={<HiOutlineUser className="text-lg" />}
               onPress={() => navigate('/admin/profile')}
+              textValue={t('menu.profile')}
             >
-              个人中心
+              {t('menu.profile')}
             </DropdownItem>
             <DropdownItem
               key="settings"
               startContent={<HiOutlineTemplate className="text-lg" />}
               onPress={() => navigate('/admin/system/general')}
+              textValue={t('user.settings')}
             >
-              系统设置
+              {t('user.settings')}
             </DropdownItem>
-            <DropdownItem key="divider" className="h-0 p-0">
+            <DropdownItem key="divider" className="h-0 p-0" textValue="divider">
               <Divider />
             </DropdownItem>
             <DropdownItem
@@ -166,13 +174,14 @@ export default function DockMenu({ className }: DockMenuProps) {
               color="danger"
               startContent={<HiOutlineLogin className="text-lg" />}
               onPress={handleLogout}
+              textValue={t('user.logout')}
             >
-              退出登录
+              {t('user.logout')}
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       ),
-      label: userInfo?.name || '用户',
+      label: userInfo?.name || t('common:user.anonymous'),
       onClick: () => {}
     },
     {
@@ -183,7 +192,7 @@ export default function DockMenu({ className }: DockMenuProps) {
       ) : (
         <HiOutlineArrowsExpand className="text-xl" />
       ),
-      label: isFullscreen ? '退出全屏' : '全屏',
+      label: isFullscreen ? t('common:actions.exitFullscreen') : t('common:actions.fullscreen'),
       onClick: toggleFullscreen
     },
     {
@@ -192,7 +201,7 @@ export default function DockMenu({ className }: DockMenuProps) {
           <HiOutlineBell className="text-xl" />
         </Badge>
       ),
-      label: '消息',
+      label: t('menu.messages', '消息'),
       onClick: () => {
         // TODO: 打开消息面板
         console.info('打开消息面板')

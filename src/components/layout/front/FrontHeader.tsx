@@ -16,6 +16,7 @@ import {
   DropdownItem,
   Divider
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
   HiOutlineMenu,
   HiOutlineX,
@@ -33,8 +34,10 @@ import { cn } from '@/utils'
 import { AnimatedThemeToggle } from '@/components/ui/magicui/AnimatedThemeToggle'
 import { SiteLogo } from '@/components/ui/SiteLogo'
 import { SearchDialog } from '@/components/search/SearchDialog'
+import { LocaleSwitcher } from '@/components/ui/LocaleSwitcher'
 import { useScrollPosition } from '@/hooks'
 import { useUserStore } from '@/stores/user'
+
 
 // 导航项类型
 interface NavItem {
@@ -44,14 +47,7 @@ interface NavItem {
   children?: NavItem[]
 }
 
-// 默认导航配置
-const NAV_ITEMS: NavItem[] = [
-  { label: '首页', href: '/', icon: HiOutlineHome },
-  { label: '文章', href: '/articles', icon: HiOutlineDocumentText },
-  { label: '分类', href: '/categories', icon: HiOutlineTag },
-  { label: '测试', href: '/test', icon: HiOutlineBeaker },
-  { label: '关于', href: '/about', icon: HiOutlineUser }
-]
+
 
 // 滑动高亮导航项
 interface SlidingNavItemProps {
@@ -117,15 +113,27 @@ interface FrontHeaderProps {
 }
 
 export default function FrontHeader({
-  navItems = NAV_ITEMS,
+  navItems: customNavItems,
   logoText = '知识库小破站',
   showSearch = true,
   scrollThreshold = 80,
   className
 }: FrontHeaderProps) {
+  const { t } = useTranslation('navigation')
   const location = useLocation()
   const navigate = useNavigate()
   const { userInfo, isLoggedIn, logout } = useUserStore()
+
+  // 默认导航配置
+  const defaultNavItems: NavItem[] = useMemo(() => [
+    { label: t('menu.home'), href: '/', icon: HiOutlineHome },
+    { label: t('menu.articles', '文章'), href: '/articles', icon: HiOutlineDocumentText },
+    { label: t('menu.categories', '分类'), href: '/categories', icon: HiOutlineTag },
+    { label: t('menu.test', '测试'), href: '/test', icon: HiOutlineBeaker },
+    { label: t('menu.about'), href: '/about', icon: HiOutlineUser }
+  ], [t])
+
+  const navItems = customNavItems || defaultNavItems
   const navRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -163,24 +171,27 @@ export default function FrontHeader({
         key="admin"
         startContent={<HiOutlineViewGrid className="text-lg" />}
         onPress={() => navigate('/admin/dashboard')}
+        textValue={t('menu.admin')}
       >
-        后台管理
+        {t('menu.admin')}
       </DropdownItem>
       <DropdownItem
         key="profile"
         startContent={<HiOutlineUser className="text-lg" />}
         onPress={() => navigate('/admin/profile')}
+        textValue={t('menu.profile')}
       >
-        个人中心
+        {t('menu.profile')}
       </DropdownItem>
       <DropdownItem
         key="settings"
         startContent={<HiOutlineCog className="text-lg" />}
         onPress={() => navigate('/admin/system/general')}
+        textValue={t('user.settings')}
       >
-        系统设置
+        {t('user.settings')}
       </DropdownItem>
-      <DropdownItem key="divider" className="h-0 p-0">
+      <DropdownItem key="divider" className="h-0 p-0" textValue="divider">
         <Divider />
       </DropdownItem>
       <DropdownItem
@@ -188,8 +199,9 @@ export default function FrontHeader({
         color="danger"
         startContent={<HiOutlineLogout className="text-lg" />}
         onPress={handleLogout}
+        textValue={t('user.logout')}
       >
-        退出登录
+        {t('user.logout')}
       </DropdownItem>
     </DropdownMenu>
   )
@@ -277,7 +289,7 @@ export default function FrontHeader({
             <div className="container mx-auto px-4">
               <div className="flex h-16 items-center justify-between">
                 {/* 左侧 Logo 区域 - 使用固定宽度避免影响中间 */}
-                <div className="w-[200px] flex-shrink-0">
+                <div className="w-[240px] flex-shrink-0">
                   <Link
                     to="/"
                     className="relative flex items-center gap-2 text-xl font-bold !text-default-900"
@@ -336,24 +348,27 @@ export default function FrontHeader({
                 </nav>
 
                 {/* 右侧工具栏 - 固定宽度 */}
-                <div className="w-[200px] flex-shrink-0 flex justify-end items-center gap-2">
+                <div className="w-[240px] flex-shrink-0 flex justify-end items-center gap-1">
                   {showSearch && (
                     <Button 
                       variant="light" 
                       isIconOnly
                       onPress={() => setIsSearchOpen(true)}
-                      className="!text-default-600 hover:!text-default-900"
+                      className="flex-shrink-0 !text-default-600 hover:!text-default-900"
                     >
                       <HiOutlineSearch className="text-lg" />
                     </Button>
                   )}
 
-                  <AnimatedThemeToggle />
+                  <div className="flex-shrink-0">
+                    <LocaleSwitcher />
+                  </div>
+                  <AnimatedThemeToggle className="flex-shrink-0" />
 
                   {isLoggedIn ? (
                     <Dropdown placement="bottom-end">
                       <DropdownTrigger>
-                        <Button variant="light" className="gap-2 px-2 !text-default-600 hover:!text-default-900">
+                        <Button variant="light" className="flex-shrink-0 gap-2 px-2 !text-default-600 hover:!text-default-900">
                           <Avatar
                             name={userInfo?.name || '用户'}
                             size="sm"
@@ -365,8 +380,8 @@ export default function FrontHeader({
                       <UserMenuContent />
                     </Dropdown>
                   ) : (
-                    <Button variant="light" size="md" as={Link} to="/login" className="!text-default-600 hover:!text-default-900">
-                      登录
+                    <Button variant="light" size="md" as={Link} to="/login" className="flex-shrink-0 !text-default-600 hover:!text-default-900">
+                      {t('user.login', '登录')}
                     </Button>
                   )}
 
@@ -374,7 +389,7 @@ export default function FrontHeader({
                   <Button
                     variant="light"
                     isIconOnly
-                    className="md:hidden !text-default-600 hover:!text-default-900"
+                    className="flex-shrink-0 md:hidden !text-default-600 hover:!text-default-900"
                     onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
                   >
                     {mobileMenuOpen ? (
@@ -462,6 +477,7 @@ export default function FrontHeader({
                   </Button>
                 )}
 
+                <LocaleSwitcher />
                 <AnimatedThemeToggle className="w-8 h-8 !min-w-8 rounded-full" />
 
                 {/* 登录按钮/用户菜单 - 收缩状态 (非移动端显示，移动端统一放在菜单中) */}
@@ -487,7 +503,7 @@ export default function FrontHeader({
                       to="/login"
                       className="min-w-14 h-8 rounded-full text-xs !text-default-600 hover:!text-default-900"
                     >
-                      登录
+                      {t('user.login', '登录')}
                     </Button>
                   )
                 )}
@@ -572,7 +588,7 @@ export default function FrontHeader({
                       }}
                       startContent={<HiOutlineViewGrid className="text-lg" />}
                     >
-                      后台管理
+                      {t('menu.admin')}
                     </Button>
                     <Button
                       variant="light"
@@ -584,7 +600,7 @@ export default function FrontHeader({
                       }}
                       startContent={<HiOutlineUser className="text-lg" />}
                     >
-                      个人中心
+                      {t('menu.profile')}
                     </Button>
                     <Button
                       variant="light"
@@ -596,7 +612,7 @@ export default function FrontHeader({
                       }}
                       startContent={<HiOutlineLogout className="text-lg" />}
                     >
-                      退出登录
+                      {t('user.logout')}
                     </Button>
                   </div>
                 ) : (
@@ -608,9 +624,14 @@ export default function FrontHeader({
                     onPress={() => setMobileMenuOpen(false)}
                     className="!text-default-600 hover:!text-default-900"
                   >
-                    登录
+                    {t('user.login', '登录')}
                   </Button>
                 )}
+                
+                <div className="mt-2 flex items-center justify-between px-4 py-2 bg-default-50 rounded-xl">
+                  <span className="text-sm text-default-500">{t('menu.language', '语言')}</span>
+                  <LocaleSwitcher />
+                </div>
               </div>
             </nav>
           </motion.div>

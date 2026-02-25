@@ -22,6 +22,7 @@ import {
   Divider,
   Kbd
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
   HiOutlineSearch,
   HiOutlineBell,
@@ -45,6 +46,7 @@ import ThemeDrawer from './ThemeDrawer'
 import { cn } from '@/utils'
 import { SiteLogo } from '@/components/ui/SiteLogo'
 import { AnimatedThemeToggle } from '@/components/ui/magicui/AnimatedThemeToggle'
+import { LocaleSwitcher } from '@/components/ui/LocaleSwitcher'
 
 // 面包屑项类型
 interface BreadcrumbItem {
@@ -60,11 +62,11 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ breadcrumbs = [], className }: AdminHeaderProps) {
+  const { t } = useTranslation(['navigation', 'common'])
   const navigate = useNavigate()
   const { userInfo, logout } = useUserStore()
   const { 
     adminSettings, 
-    sidebarCollapsed, 
     toggleSidebar 
   } = useAppStore()
   const { themeMode, showBreadcrumb, menuLayout } = adminSettings
@@ -119,13 +121,14 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
       {sortedMenus.map((menu) => {
         if (menu.children && menu.children.length > 0) {
           return (
-            <DropdownSection key={menu.key} title={menu.label} showDivider>
+            <DropdownSection key={menu.key} title={t(`menu.${menu.key}`, menu.label)} showDivider>
               {menu.children.map((child) => (
                 <DropdownItem
                   key={child.path || child.key}
                   startContent={child.icon && <child.icon className="text-lg" />}
+                  textValue={t(`menu.${child.key}`, child.label)}
                 >
-                  {child.label}
+                  {t(`menu.${child.key}`, child.label)}
                 </DropdownItem>
               ))}
             </DropdownSection>
@@ -135,8 +138,9 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
           <DropdownItem
             key={menu.path || menu.key}
             startContent={menu.icon && <menu.icon className="text-lg" />}
+            textValue={t(`menu.${menu.key}`, menu.label)}
           >
-            {menu.label}
+            {t(`menu.${menu.key}`, menu.label)}
           </DropdownItem>
         )
       })}
@@ -150,31 +154,35 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
         key="profile"
         startContent={<HiOutlineUser className="text-lg" />}
         onPress={() => navigate('/admin/profile')}
+        textValue={t('menu.profile')}
       >
-        个人中心
+        {t('menu.profile')}
       </DropdownItem>
       <DropdownItem
         key="settings"
         startContent={<HiOutlineCog className="text-lg" />}
         onPress={() => navigate('/admin/system/general')}
+        textValue={t('user.settings')}
       >
-        系统设置
+        {t('user.settings')}
       </DropdownItem>
       <DropdownItem
         key="theme"
         startContent={<HiOutlineAdjustments className="text-lg" />}
         onPress={() => setThemeDrawerOpen(true)}
+        textValue={t('common:actions.themeSettings')}
       >
-        主题设置
+        {t('common:actions.themeSettings')}
       </DropdownItem>
       <DropdownItem
         key="theme-toggle"
         startContent={getThemeIcon()}
         onPress={handleToggleTheme}
+        textValue={t('common:actions.toggleTheme')}
       >
-        切换主题 ({themeMode === 'system' ? '跟随系统' : themeMode === 'dark' ? '深色' : '浅色'})
+        {t('common:actions.toggleTheme')} ({themeMode === 'system' ? t('common:theme.system') : themeMode === 'dark' ? t('common:theme.dark') : t('common:theme.light')})
       </DropdownItem>
-      <DropdownItem key="divider" className="h-0 p-0">
+      <DropdownItem key="divider" className="h-0 p-0" textValue="divider">
         <Divider />
       </DropdownItem>
       <DropdownItem
@@ -182,8 +190,9 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
         color="danger"
         startContent={<HiOutlineLogout className="text-lg" />}
         onPress={handleLogout}
+        textValue={t('user.logout')}
       >
-        退出登录
+        {t('user.logout')}
       </DropdownItem>
     </DropdownMenu>
   )
@@ -221,7 +230,7 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
                     exit={{ width: 0, opacity: 0, x: -10 }}
                     className="absolute left-full ml-2 overflow-hidden whitespace-nowrap text-sm font-bold bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent"
                   >
-                    后台管理
+                    {t('menu.admin')}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -243,6 +252,8 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
               >
                 <Search size={18} className="text-default-500" />
               </Button>
+
+              <LocaleSwitcher />
 
               {/* 主题切换 */}
               <AnimatedThemeToggle className="w-8 h-8 !min-w-8 rounded-full" />
@@ -345,7 +356,7 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
                 {/* 搜索框 */}
                 <NavbarItem className="hidden lg:flex">
                   <Input
-                    placeholder="搜索..."
+                    placeholder={t('common:actions.search')}
                     value={searchValue}
                     onValueChange={setSearchValue}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch(searchValue)}
@@ -363,6 +374,11 @@ export default function AdminHeader({ breadcrumbs = [], className }: AdminHeader
                       inputWrapper: 'bg-default-100'
                     }}
                   />
+                </NavbarItem>
+
+                {/* 国际化切换 */}
+                <NavbarItem>
+                  <LocaleSwitcher />
                 </NavbarItem>
 
                 {/* 通知 */}

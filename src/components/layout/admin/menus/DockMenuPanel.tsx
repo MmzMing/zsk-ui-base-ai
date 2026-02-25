@@ -6,6 +6,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Input, ScrollShadow, Button } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   HiOutlineSearch,
@@ -22,10 +23,8 @@ interface DockMenuPanelProps {
   onClose: () => void
 }
 
-
-
-
 export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
+  const { t } = useTranslation(['navigation', 'common'])
   const navigate = useNavigate()
   const location = useLocation()
   const [searchValue, setSearchValue] = useState('')
@@ -36,19 +35,22 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
 
   // 过滤菜单
   const filteredMenus = useMemo(() => {
-    if (!searchValue.trim()) return sortedMenus
-    const keyword = searchValue.toLowerCase()
+    const keyword = searchValue.toLowerCase().trim()
+    if (!keyword) return sortedMenus
+    
     return sortedMenus
       .map(menu => {
+        const menuLabel = t(`menu.${menu.key}`, menu.label).toLowerCase()
         // 检查一级菜单
-        if (menu.label.toLowerCase().includes(keyword)) {
+        if (menuLabel.includes(keyword)) {
           return menu
         }
         // 检查子菜单
         if (menu.children) {
-          const matchedChildren = menu.children.filter(
-            child => child.label.toLowerCase().includes(keyword)
-          )
+          const matchedChildren = menu.children.filter(child => {
+            const childLabel = t(`menu.${child.key}`, child.label).toLowerCase()
+            return childLabel.includes(keyword)
+          })
           if (matchedChildren.length > 0) {
             return { ...menu, children: matchedChildren }
           }
@@ -56,7 +58,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
         return null
       })
       .filter(Boolean) as MenuItem[]
-  }, [sortedMenus, searchValue])
+  }, [sortedMenus, searchValue, t])
 
   // 获取当前激活的菜单项
   const activeKey = useMemo(() => {
@@ -88,6 +90,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
       {filteredMenus.map((menu) => {
         const isActive = activeKey === menu.key
         const Icon = menu.icon
+        const label = t(`menu.${menu.key}`, menu.label)
         
         return (
           <div key={menu.key}>
@@ -107,7 +110,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
               }}
             >
               {Icon && <Icon className="text-lg flex-shrink-0" />}
-              <span className="truncate flex-1 text-left">{menu.label}</span>
+              <span className="truncate flex-1 text-left">{label}</span>
               {menu.children && menu.children.length > 0 && (
                 <HiOutlineChevronRight className="text-sm text-default-400" />
               )}
@@ -130,7 +133,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
           onPress={() => setSelectedMenu(null)}
         >
           <HiOutlineChevronRight className="text-lg rotate-180" />
-          <span className="text-sm">返回</span>
+          <span className="text-sm">{t('common:actions.back', '返回')}</span>
         </Button>
         {selectedMenu.children.map((child) => {
           const isActive = activeKey === child.key
@@ -148,7 +151,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
               onPress={() => handleSelect(child)}
             >
               {Icon && <Icon className="text-lg flex-shrink-0" />}
-              <span className="truncate">{child.label}</span>
+              <span className="truncate">{t(`menu.${child.key}`, child.label)}</span>
             </Button>
           )
         })}
@@ -183,7 +186,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
             {/* 搜索框 */}
             <div className="p-4 border-b border-divider">
               <Input
-                placeholder="搜索菜单..."
+                placeholder={t('common:actions.searchMenu', '搜索菜单...')}
                 value={searchValue}
                 onValueChange={setSearchValue}
                 startContent={<HiOutlineSearch className="text-default-400" />}
@@ -212,7 +215,7 @@ export default function DockMenuPanel({ isOpen, onClose }: DockMenuPanelProps) {
                     renderSecondLevel()
                   ) : (
                     <div className="h-full flex items-center justify-center text-default-400 text-sm">
-                      {searchValue ? '未找到匹配的菜单' : '请选择一级菜单查看子菜单'}
+                      {searchValue ? t('common:errors.noMatchingMenu', '未找到匹配的菜单') : t('common:actions.selectMenuToViewChildren', '请选择一级菜单查看子菜单')}
                     </div>
                   )}
                 </ScrollShadow>

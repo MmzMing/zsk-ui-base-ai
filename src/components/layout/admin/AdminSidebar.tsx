@@ -7,25 +7,26 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Tooltip, ScrollShadow } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
-  HiOutlineChevronLeft,
-  HiOutlineChevronRight,
-  HiOutlineMenuAlt2,
   HiOutlineChevronDown
 } from 'react-icons/hi'
 import { useAppStore } from '@/stores/app'
 import { ADMIN_MENUS, getSortedMenus, type MenuItem } from '@/constants/menu'
 import { cn } from '@/utils'
 import { SiteLogo } from '@/components/ui/SiteLogo'
+
 // 子菜单项组件
 function SubMenuItem({ 
   item, 
   activeKey, 
-  onSelect 
+  onSelect,
+  t
 }: { 
   item: MenuItem
   activeKey: string
   onSelect: (item: MenuItem) => void 
+  t: any
 }) {
   const isActive = activeKey === item.key
   const Icon = item.icon
@@ -41,7 +42,7 @@ function SubMenuItem({
       onPress={() => item.path && onSelect(item)}
     >
       {Icon && <Icon className="text-lg flex-shrink-0" />}
-      <span className="text-sm truncate">{item.label}</span>
+      <span className="text-sm truncate">{t(`menu.${item.key}`, item.label)}</span>
     </Button>
   )
 }
@@ -53,7 +54,8 @@ function MenuItemComponent({
   activeKey, 
   onSelect,
   expandedKeys,
-  toggleExpand
+  toggleExpand,
+  t
 }: { 
   item: MenuItem
   collapsed: boolean
@@ -61,17 +63,19 @@ function MenuItemComponent({
   onSelect: (item: MenuItem) => void
   expandedKeys: Set<string>
   toggleExpand: (key: string) => void
+  t: any
 }) {
   const isActive = activeKey === item.key || activeKey.startsWith(`${item.key}/`)
   const hasChildren = item.children && item.children.length > 0
   const isExpanded = expandedKeys.has(item.key)
   const Icon = item.icon
+  const label = t(`menu.${item.key}`, item.label)
 
   // 折叠状态下只显示图标
   if (collapsed) {
     return (
       <Tooltip
-        content={item.label}
+        content={label}
         placement="right"
         delay={300}
       >
@@ -114,7 +118,7 @@ function MenuItemComponent({
         onPress={() => item.path && onSelect(item)}
       >
         {Icon && <Icon className="text-xl flex-shrink-0" />}
-        <span className="truncate">{item.label}</span>
+        <span className="truncate">{label}</span>
       </Button>
     )
   }
@@ -132,7 +136,7 @@ function MenuItemComponent({
         onPress={() => toggleExpand(item.key)}
       >
         {Icon && <Icon className="text-xl flex-shrink-0" />}
-        <span className="truncate flex-1 text-left">{item.label}</span>
+        <span className="truncate flex-1 text-left">{label}</span>
         <motion.div
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -158,6 +162,7 @@ function MenuItemComponent({
                   item={child}
                   activeKey={activeKey}
                   onSelect={onSelect}
+                  t={t}
                 />
               ))}
             </div>
@@ -174,11 +179,11 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ className }: AdminSidebarProps) {
+  const { t } = useTranslation('navigation')
   const navigate = useNavigate()
   const location = useLocation()
   const {
     sidebarCollapsed: collapsed,
-    toggleSidebar,
     adminSettings
   } = useAppStore()
   
@@ -301,6 +306,7 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
                 onSelect={handleSelect}
                 expandedKeys={expandedKeys}
                 toggleExpand={toggleExpand}
+                t={t}
               />
             ))}
           </div>

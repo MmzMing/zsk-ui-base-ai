@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Button, ScrollShadow } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
   HiOutlineMenuAlt2
 } from 'react-icons/hi'
@@ -30,11 +31,13 @@ interface DualMenuProps {
 function SubMenuItem({ 
   item, 
   activeKey, 
-  onSelect 
+  onSelect,
+  t
 }: { 
   item: MenuItem
   activeKey: string
   onSelect: (item: MenuItem) => void 
+  t: any
 }) {
   const isActive = activeKey === item.key
   const Icon = item.icon
@@ -50,12 +53,13 @@ function SubMenuItem({
       onPress={() => item.path && onSelect(item)}
     >
       {Icon && <Icon className="text-lg flex-shrink-0" />}
-      <span className="text-sm truncate">{item.label}</span>
+      <span className="text-sm truncate">{t(`menu.${item.key}`, item.label)}</span>
     </Button>
   )
 }
 
 export default function DualMenu({ className, logo, extra, children }: DualMenuProps) {
+  const { t } = useTranslation('navigation')
   const navigate = useNavigate()
   const location = useLocation()
   const { adminSettings } = useAppStore()
@@ -129,7 +133,7 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
   const defaultLogo = (
     <div className="flex items-center gap-2">
       <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-      <span className="font-semibold text-lg">知识库后台</span>
+      <span className="font-semibold text-lg">{t('menu.admin')}</span>
     </div>
   )
 
@@ -203,7 +207,7 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
                       onPress={() => handleModuleClick(currentModuleMenu)}
                     >
                       {currentModuleMenu.icon && <currentModuleMenu.icon className="text-xl flex-shrink-0" />}
-                      <span className="truncate">{currentModuleMenu.label}</span>
+                      <span className="truncate">{t(`menu.${currentModuleMenu.key}`, currentModuleMenu.label)}</span>
                     </Button>
                   )}
                   {/* 显示子菜单 */}
@@ -213,6 +217,7 @@ export default function DualMenu({ className, logo, extra, children }: DualMenuP
                       item={item}
                       activeKey={activeKey}
                       onSelect={handleSelect}
+                      t={t}
                     />
                   ))}
                 </div>

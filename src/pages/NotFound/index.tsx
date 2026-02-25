@@ -7,6 +7,7 @@ import { Button } from '@heroui/react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // ===== 1. 故障文字组件 =====
 function GlitchText({ text, className = '' }: { text: string; className?: string }) {
@@ -144,14 +145,15 @@ function PixelDebris() {
 
 // ===== 5. 随机错误代码流 =====
 function ErrorStream() {
+  const { t } = useTranslation('common')
   const lines = [
     'ERROR: PAGE_NOT_FOUND',
     '404: RESOURCE_MISSING',
     'WARNING: DIV_ID_NOT_EXIST',
-    '404 页面走丢了',
+    t('notFound.lost'),
     'ERROR_CODE: 0x404',
     'FAILED TO LOCATE',
-    '页面未找到',
+    t('notFound.title'),
   ]
 
   const [activeLines, setActiveLines] = useState<{ id: number; text: string; x: number; delay: number }[]>([])
@@ -195,6 +197,8 @@ function ErrorStream() {
 
 // ===== 6. 主页面组件 =====
 export default function NotFoundPage() {
+  const { t } = useTranslation('common')
+  
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a]">
       {/* 背景特效层 */}
@@ -229,11 +233,11 @@ export default function NotFoundPage() {
         {/* 错误信息 */}
         <div className="text-center space-y-2">
           <GlitchText
-            text="PAGE NOT FOUND"
+            text={t('notFound.title')}
             className="text-xl md:text-2xl font-bold font-mono text-[#00ffff]"
           />
           <p className="text-sm md:text-base text-white/50 font-mono">
-            页面不存在或已被移除
+            {t('notFound.desc')}
           </p>
         </div>
 
@@ -256,7 +260,7 @@ export default function NotFoundPage() {
             className="font-mono text-sm border-white/30 text-white/80 hover:bg-white/10 hover:border-white/50 transition-all duration-300"
           >
             <span className="mr-2">←</span>
-            返回首页
+            {t('notFound.backHome')}
           </Button>
         </motion.div>
       </div>

@@ -6,6 +6,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './styles/global.css'
+import './locales'
 
 // 获取根节点
 const rootElement = document.getElementById('root')

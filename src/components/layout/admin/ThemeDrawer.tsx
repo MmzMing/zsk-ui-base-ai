@@ -4,8 +4,9 @@
  * 使用 framer-motion 实现交错动画
  */
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Button, Switch, Slider } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import {
   HiOutlineColorSwatch,
@@ -27,41 +28,6 @@ import { useAppStore, type ThemeMode, type MenuLayout, type PageTransition } fro
 import { useTheme } from '@/hooks/useTheme'
 import { LAYOUT } from '@/constants'
 import { cn } from '@/utils'
-
-// 预设颜色
-const PRESET_COLORS = [
-  { label: '默认蓝', value: '#537BF9' },
-  { label: '清新绿', value: '#54B83E' },
-  { label: '神秘紫', value: '#7E0DF5' },
-  { label: '活力橙', value: '#FF7416' },
-  { label: '少女粉', value: '#FF98C3' }
-]
-
-// 菜单布局选项
-const MENU_LAYOUTS: Array<{
-  value: MenuLayout
-  icon: React.ComponentType<{ className?: string }>
-  label: string
-}> = [
-  { value: 'vertical', icon: HiOutlineViewList, label: '垂直' },
-  { value: 'horizontal', icon: HiOutlineMenuAlt3, label: '水平' },
-  { value: 'mixed', icon: HiOutlineTemplate, label: '混合' },
-  { value: 'dual', icon: HiOutlineViewBoards, label: '双列' },
-  { value: 'dock', icon: HiOutlineViewBoards, label: 'Dock' }
-]
-
-// 页面切换动效选项
-const PAGE_TRANSITIONS: Array<{
-  value: PageTransition
-  icon: React.ComponentType<{ className?: string }>
-  label: string
-}> = [
-  { value: 'none', icon: HiOutlineBan, label: '关闭' },
-  { value: 'fade', icon: HiOutlineSparkles, label: '淡入淡出' },
-  { value: 'slide', icon: HiOutlineArrowRight, label: '滑入滑出' },
-  { value: 'scale', icon: HiOutlineArrowsExpand, label: '缩放渐变' },
-  { value: 'layered', icon: HiOutlineViewBoards, label: '层级切换' }
-]
 
 // 背景层配置
 const BACKGROUND_LAYERS = 5
@@ -124,11 +90,47 @@ const contentItemVariants: Variants = {
 
 // 主题设置面板内容
 function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
+  const { t } = useTranslation('setting')
   const {
     adminSettings,
     updateAdminSettings,
     resetAdminSettings
   } = useAppStore()
+
+  // 预设颜色
+  const presetColors = useMemo(() => [
+    { label: t('primaryColor.default'), value: '#537BF9' },
+    { label: t('primaryColor.green'), value: '#54B83E' },
+    { label: t('primaryColor.purple'), value: '#7E0DF5' },
+    { label: t('primaryColor.orange'), value: '#FF7416' },
+    { label: t('primaryColor.pink'), value: '#FF98C3' }
+  ], [t])
+
+  // 菜单布局选项
+  const menuLayouts: Array<{
+    value: MenuLayout
+    icon: React.ComponentType<{ className?: string }>
+    label: string
+  }> = useMemo(() => [
+    { value: 'vertical', icon: HiOutlineViewList, label: t('menuLayout.vertical') },
+    { value: 'horizontal', icon: HiOutlineMenuAlt3, label: t('menuLayout.horizontal') },
+    { value: 'mixed', icon: HiOutlineTemplate, label: t('menuLayout.mixed') },
+    { value: 'dual', icon: HiOutlineViewBoards, label: t('menuLayout.dual') },
+    { value: 'dock', icon: HiOutlineViewBoards, label: t('menuLayout.dock') }
+  ], [t])
+
+  // 页面切换动效选项
+  const pageTransitions: Array<{
+    value: PageTransition
+    icon: React.ComponentType<{ className?: string }>
+    label: string
+  }> = useMemo(() => [
+    { value: 'none', icon: HiOutlineBan, label: t('pageTransition.none') },
+    { value: 'fade', icon: HiOutlineSparkles, label: t('pageTransition.fade') },
+    { value: 'slide', icon: HiOutlineArrowRight, label: t('pageTransition.slide') },
+    { value: 'scale', icon: HiOutlineArrowsExpand, label: t('pageTransition.zoom') },
+    { value: 'layered', icon: HiOutlineViewBoards, label: t('pageTransition.layered') }
+  ], [t])
 
   const {
     themeMode,
@@ -220,7 +222,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
         initial="hidden"
         animate="visible"
       >
-        <h2 className="text-xl font-bold">主题设置</h2>
+        <h2 className="text-xl font-bold">{t('title')}</h2>
         <div className="flex items-center gap-1">
           <Button
             variant="light"
@@ -228,7 +230,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
             size="sm"
             onPress={handleReset}
             className={getResetButtonClass()}
-            aria-label="重置主题设置"
+            aria-label={t('reset')}
           >
             <HiOutlineRefresh className="text-lg" />
           </Button>
@@ -239,7 +241,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               size="sm"
               onPress={onClose}
               className={getCloseButtonClass()}
-              aria-label="关闭主题设置面板"
+              aria-label={t('close')}
             >
               <HiOutlineX className="text-lg" />
             </Button>
@@ -254,13 +256,13 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineAdjustments className="text-lg" />
-              主题模式
+              {t('themeMode.title')}
             </h3>
             <div className="flex gap-2">
               {[
-                { value: 'light' as ThemeMode, icon: HiOutlineSun, label: '浅色' },
-                { value: 'dark' as ThemeMode, icon: HiOutlineMoon, label: '深色' },
-                { value: 'system' as ThemeMode, icon: HiOutlineAdjustments, label: '跟随系统' }
+                { value: 'light' as ThemeMode, icon: HiOutlineSun, label: t('themeMode.light') },
+                { value: 'dark' as ThemeMode, icon: HiOutlineMoon, label: t('themeMode.dark') },
+                { value: 'system' as ThemeMode, icon: HiOutlineAdjustments, label: t('themeMode.system') }
               ].map((mode) => (
                 <button
                   key={mode.value}
@@ -284,10 +286,10 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineColorSwatch className="text-lg" />
-              主色调
+              {t('primaryColor.title')}
             </h3>
             <div className="flex flex-wrap gap-2">
-              {PRESET_COLORS.map((color) => (
+              {presetColors.map((color) => (
                 <button
                   key={color.value}
                   className={cn(
@@ -297,7 +299,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                   style={{ backgroundColor: color.value }}
                   onClick={() => updateSettings({ primaryColor: color.value })}
                   title={color.label}
-                  aria-label={`选择${color.label}主题色`}
+                  aria-label={`${t('primaryColor.title')}: ${color.label}`}
                 />
               ))}
             </div>
@@ -310,10 +312,10 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineTemplate className="text-lg" />
-              菜单布局
+              {t('menuLayout.title')}
             </h3>
             <div className="flex gap-2">
-              {MENU_LAYOUTS.map((layout) => {
+              {menuLayouts.map((layout) => {
                 const Icon = layout.icon
                 return (
                   <button
@@ -340,10 +342,10 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineSparkles className="text-lg" />
-              页面切换动效
+              {t('pageTransition.title')}
             </h3>
             <div className="flex gap-2">
-              {PAGE_TRANSITIONS.map((transition) => {
+              {pageTransitions.map((transition) => {
                 const Icon = transition.icon
                 return (
                   <button
@@ -370,15 +372,15 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineAdjustments className="text-lg" />
-              布局设置
+              {t('layoutSettings.title')}
             </h3>
             <div className="flex flex-col gap-2">
               {[
-                { key: 'multiTab', value: multiTab, label: '多标签页' },
-                { key: 'showBreadcrumb', value: showBreadcrumb, label: '面包屑导航' },
-                { key: 'sidebarAccordion', value: sidebarAccordion, label: '侧边栏手风琴' },
-                { key: 'enableBorder', value: enableBorder, label: '启用边框' },
-                { key: 'enableShadow', value: enableShadow, label: '启用阴影' }
+                { key: 'multiTab', value: multiTab, label: t('layoutSettings.multiTab') },
+                { key: 'showBreadcrumb', value: showBreadcrumb, label: t('layoutSettings.breadcrumb') },
+                { key: 'sidebarAccordion', value: sidebarAccordion, label: t('layoutSettings.sidebarAccordion') },
+                { key: 'enableBorder', value: enableBorder, label: t('layoutSettings.enableBorder') },
+                { key: 'enableShadow', value: enableShadow, label: t('layoutSettings.enableShadow') }
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-1">
                   <span className="text-sm">{item.label}</span>
@@ -401,11 +403,11 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineSparkles className="text-lg" />
-              动效设置
+              {t('animationSettings.title')}
             </h3>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between py-1">
-                <span className="text-sm">点击火花效果</span>
+                <span className="text-sm">{t('animationSettings.clickSpark')}</span>
                 <Switch
                   size="sm"
                   color="primary"
@@ -415,7 +417,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
                 />
               </div>
               <div className="flex items-center justify-between py-1">
-                <span className="text-sm">色弱模式</span>
+                <span className="text-sm">{t('animationSettings.colorWeak')}</span>
                 <Switch
                   size="sm"
                   color="primary"
@@ -433,7 +435,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
         {renderAnimatedSection(
           <section>
             <Slider
-              label="菜单宽度"
+              label={t('menuWidth')}
               size="sm"
               step={10}
               minValue={LAYOUT.MIN_MENU_WIDTH}
@@ -445,7 +447,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               showOutline
               color="primary"
               className="max-w-md"
-              aria-label="菜单宽度"
+              aria-label={t('menuWidth')}
             />
           </section>,
           7
@@ -455,7 +457,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
         {renderAnimatedSection(
           <section>
             <Slider
-              label="全局圆角"
+              label={t('globalRadius')}
               size="sm"
               step={2}
               minValue={LAYOUT.MIN_BORDER_RADIUS}
@@ -467,7 +469,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
               showOutline
               color="primary"
               className="max-w-md"
-              aria-label="全局圆角"
+              aria-label={t('globalRadius')}
             />
           </section>,
           8
@@ -478,7 +480,7 @@ function ThemeSettingsContent({ onClose }: { onClose?: () => void }) {
           <section>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <HiOutlineAdjustments className="text-lg" />
-              字体大小
+              {t('fontSize')}
             </h3>
             <div className="flex gap-2">
               {LAYOUT.FONT_SIZE_OPTIONS.map((size) => (

@@ -99,8 +99,6 @@ function DockItem({
 
   const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize])
   const size = useSpring(targetSize, spring)
-  const { actualTheme } = useTheme()
-  const isDark = actualTheme === 'dark'
   const itemBg = 'bg-default-200/50 hover:bg-default-200'
 
   // 根据 noCircle 决定是否显示圆形背景
@@ -191,11 +189,6 @@ export default function Dock({
 
   // 使用 HeroUI 的语义颜色，与主题抽屉保持一致
   const dockBg = 'bg-content1'
-  const dockBorder = 'border-divider'
-
-
-
-
 
   const maxHeight = useMemo(() => Math.max(dockHeight, magnification + magnification / 2 + 4), [magnification, dockHeight])
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight])

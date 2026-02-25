@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Button, ScrollShadow } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
   HiOutlineMenuAlt2,
   HiOutlineChevronDown
@@ -31,11 +32,13 @@ interface MixedMenuProps {
 function SubMenuItem({ 
   item, 
   activeKey, 
-  onSelect 
+  onSelect,
+  t
 }: { 
   item: MenuItem
   activeKey: string
   onSelect: (item: MenuItem) => void 
+  t: any
 }) {
   const isActive = activeKey === item.key
   const Icon = item.icon
@@ -51,12 +54,13 @@ function SubMenuItem({
       onPress={() => item.path && onSelect(item)}
     >
       {Icon && <Icon className="text-lg flex-shrink-0" />}
-      <span className="text-sm truncate">{item.label}</span>
+      <span className="text-sm truncate">{t(`menu.${item.key}`, item.label)}</span>
     </Button>
   )
 }
 
 export default function MixedMenu({ className, logo, extra, children }: MixedMenuProps) {
+  const { t } = useTranslation('navigation')
   const navigate = useNavigate()
   const location = useLocation()
   const { adminSettings } = useAppStore()
@@ -125,6 +129,7 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
       {sortedMenus.map((menu) => {
         const isActive = activeMenuKey === menu.key
         const Icon = menu.icon
+        const label = t(`menu.${menu.key}`, menu.label)
         
         return (
           <Button
@@ -138,7 +143,7 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
             onPress={() => handleMenuClick(menu)}
           >
             {Icon && <Icon className="text-lg flex-shrink-0" />}
-            <span className="hidden xl:inline truncate">{menu.label}</span>
+            <span className="hidden xl:inline truncate">{label}</span>
             {menu.children && menu.children.length > 0 && (
               <HiOutlineChevronDown className="text-xs hidden xl:block" />
             )}
@@ -166,6 +171,7 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
                 item={item}
                 activeKey={activeSubKey}
                 onSelect={handleSelect}
+                t={t}
               />
             ))}
           </div>
@@ -178,7 +184,7 @@ export default function MixedMenu({ className, logo, extra, children }: MixedMen
   const defaultLogo = (
     <div className="flex items-center gap-2">
       <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-      <span className="font-semibold text-lg">知识库后台</span>
+      <span className="font-semibold text-lg">{t('menu.admin')}</span>
     </div>
   )
 

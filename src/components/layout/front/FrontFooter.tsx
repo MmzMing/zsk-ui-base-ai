@@ -6,18 +6,20 @@
 import { Link } from 'react-router-dom'
 import { Divider } from '@heroui/react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useMemo } from 'react'
 import { 
   Mail, 
   MapPin, 
   Rss, 
   Github,
   Twitter,
+  Shield,
+  Send,
   BookOpen,
   FileText,
   Compass,
-  Info,
-  Shield,
-  Send
+  Info
 } from 'lucide-react'
 import { cn } from '@/utils'
 import { SiteLogo } from '@/components/ui/SiteLogo'
@@ -43,40 +45,6 @@ interface SocialLink {
   label: string
 }
 
-// 默认底部链接
-const FOOTER_SECTIONS: FooterSection[] = [
-  {
-    title: '浏览',
-    links: [
-      { label: '首页', href: '/', icon: <BookOpen className="w-4 h-4" /> },
-      { label: '文章', href: '/articles', icon: <FileText className="w-4 h-4" /> },
-      { label: '分类', href: '/categories', icon: <Compass className="w-4 h-4" /> },
-      { label: '关于', href: '/about', icon: <Info className="w-4 h-4" /> }
-    ]
-  },
-  {
-    title: '法律',
-    links: [
-      { label: '隐私政策', href: '/privacy', icon: <Shield className="w-4 h-4" /> },
-      { label: '服务条款', href: '/terms', icon: <FileText className="w-4 h-4" /> }
-    ]
-  },
-  {
-    title: '联系',
-    links: [
-      { label: '反馈建议', href: '/feedback', icon: <Send className="w-4 h-4" /> },
-      { label: '广告合作', href: '/cooperation', icon: <Mail className="w-4 h-4" /> }
-    ]
-  }
-]
-
-// 社交链接
-const SOCIAL_LINKS: SocialLink[] = [
-  { icon: <Github className="w-5 h-5" />, href: 'https://github.com', label: 'GitHub' },
-  { icon: <Twitter className="w-5 h-5" />, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: <Mail className="w-5 h-5" />, href: 'mailto:contact@example.com', label: 'Email' }
-]
-
 // 前台底部属性
 interface FrontFooterProps {
   /** 自定义底部链接分组 */
@@ -95,15 +63,53 @@ interface FrontFooterProps {
 }
 
 export default function FrontFooter({
-  sections = FOOTER_SECTIONS,
-  socialLinks = SOCIAL_LINKS,
+  sections,
+  socialLinks,
   siteName = '知识库小破站',
   siteDescription = '分享知识，记录成长。一个专注于技术分享与学习的知识平台。',
   icp = '',
   policeIcp = '',
   className
 }: FrontFooterProps) {
+  const { t } = useTranslation(['navigation', 'common'])
   const currentYear = new Date().getFullYear()
+
+  // 默认底部链接
+  const defaultSections = useMemo<FooterSection[]>(() => [
+    {
+      title: t('footer.browse'),
+      links: [
+        { label: t('footer.home'), href: '/', icon: <BookOpen className="w-4 h-4" /> },
+        { label: t('footer.articles'), href: '/articles', icon: <FileText className="w-4 h-4" /> },
+        { label: t('footer.categories'), href: '/categories', icon: <Compass className="w-4 h-4" /> },
+        { label: t('footer.about'), href: '/about', icon: <Info className="w-4 h-4" /> }
+      ]
+    },
+    {
+      title: t('footer.law'),
+      links: [
+        { label: t('footer.privacy'), href: '/privacy', icon: <Shield className="w-4 h-4" /> },
+        { label: t('footer.terms'), href: '/terms', icon: <FileText className="w-4 h-4" /> }
+      ]
+    },
+    {
+      title: t('footer.contact'),
+      links: [
+        { label: t('footer.feedback'), href: '/feedback', icon: <Send className="w-4 h-4" /> },
+        { label: t('footer.cooperation'), href: '/cooperation', icon: <Mail className="w-4 h-4" /> }
+      ]
+    }
+  ], [t])
+
+  // 默认社交链接
+  const defaultSocialLinks = useMemo<SocialLink[]>(() => [
+    { icon: <Github className="w-5 h-5" />, href: 'https://github.com', label: 'GitHub' },
+    { icon: <Twitter className="w-5 h-5" />, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: <Mail className="w-5 h-5" />, href: 'mailto:contact@example.com', label: 'Email' }
+  ], [])
+
+  const currentSections = sections || defaultSections
+  const currentSocialLinks = socialLinks || defaultSocialLinks
 
   // 渲染链接
   const renderLink = (link: FooterLink) => {
@@ -172,14 +178,14 @@ export default function FrontFooter({
                 </a>
                 <div className="flex items-center gap-3 text-sm text-default-600">
                   <MapPin className="w-5 h-5 !text-default-400" />
-                  <span>中国 · 北京</span>
+                  <span>{t('common:footer.location')}</span>
                 </div>
               </div>
             </div>
 
             {/* 链接分组 */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 lg:gap-16">
-              {sections.map((section, sectionIndex) => (
+              {currentSections.map((section, sectionIndex) => (
                 <motion.div
                   key={section.title}
                   initial={{ opacity: 0, y: 20 }}
@@ -207,8 +213,8 @@ export default function FrontFooter({
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pt-8 border-t border-divider/50">
             {/* 社交链接 */}
             <div className="flex items-center gap-3">
-              <span className="text-sm text-default-500 mr-2">关注我们</span>
-              {socialLinks.map((social) => (
+              <span className="text-sm text-default-500 mr-2">{t('common:footer.followUs')}</span>
+              {currentSocialLinks.map((social) => (
                 <motion.a
                   key={social.label}
                   href={social.href}

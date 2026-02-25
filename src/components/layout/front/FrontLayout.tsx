@@ -10,6 +10,8 @@ import FrontFooter from './FrontFooter'
 import ClickSpark from '@/components/ui/reactbits/ClickSpark'
 import { cn } from '@/utils'
 
+import { useTranslation } from 'react-i18next'
+
 // 前台布局属性
 interface FrontLayoutProps {
   /** 是否显示 Header */
@@ -36,11 +38,15 @@ export default function FrontLayout({
   policeIcp = import.meta.env.VITE_APP_POLICE_ICP || '',
   className
 }: FrontLayoutProps) {
+  const { t } = useTranslation('common')
+  const defaultSiteName = siteName === '知识库小破站' ? t('app.name') : siteName
+  const defaultDescription = siteDescription === '分享知识，记录成长。一个专注于技术分享与学习的知识平台。' ? t('app.slogan') : siteDescription
+
   return (
     <ClickSpark sparkColor="#3b82f6" sparkSize={10} sparkRadius={15} duration={400}>
       <div className={cn('min-h-screen flex flex-col bg-background', className)}>
         {/* 顶部导航 */}
-        {showHeader && <FrontHeader />}
+        {showHeader && <FrontHeader logoText={defaultSiteName} />}
 
         {/* 主内容区域 */}
         <ScrollShadow className="flex-1">
@@ -52,8 +58,8 @@ export default function FrontLayout({
         {/* 底部 */}
         {showFooter && (
           <FrontFooter
-            siteName={siteName}
-            siteDescription={siteDescription}
+            siteName={defaultSiteName}
+            siteDescription={defaultDescription}
             icp={icp}
             policeIcp={policeIcp}
           />

@@ -6,6 +6,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import {
   HiOutlineChevronDown,
   HiOutlineMenuAlt2
@@ -24,6 +25,7 @@ interface HorizontalMenuProps {
 }
 
 export default function HorizontalMenu({ className, logo, extra }: HorizontalMenuProps) {
+  const { t } = useTranslation('navigation')
   const navigate = useNavigate()
   const location = useLocation()
   const [openKeys, setOpenKeys] = useState<Set<string>>(new Set())
@@ -58,6 +60,7 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
     const hasChildren = item.children && item.children.length > 0
     const isOpen = openKeys.has(item.key)
     const Icon = item.icon
+    const label = t(`menu.${item.key}`, item.label)
 
     if (hasChildren) {
       return (
@@ -92,11 +95,11 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
               }
             >
               {Icon && <Icon className="text-lg flex-shrink-0" />}
-              <span className="hidden xl:inline truncate">{item.label}</span>
+              <span className="hidden xl:inline truncate">{label}</span>
             </Button>
           </DropdownTrigger>
           <DropdownMenu
-            aria-label={item.label}
+            aria-label={label}
             onAction={(key) => {
               const childItem = item.children?.find(c => c.key === key)
               if (childItem?.path) {
@@ -112,8 +115,9 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
                   key={child.key}
                   startContent={ChildIcon ? <ChildIcon className="text-lg" /> : undefined}
                   className={cn(isChildActive && 'bg-primary/10 text-primary')}
+                  textValue={t(`menu.${child.key}`, child.label)}
                 >
-                  {child.label}
+                  {t(`menu.${child.key}`, child.label)}
                 </DropdownItem>
               )
             }) || <></>}
@@ -134,7 +138,7 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
         onPress={() => item.path && handleSelect(item)}
       >
         {Icon && <Icon className="text-lg flex-shrink-0" />}
-        <span className="hidden xl:inline truncate">{item.label}</span>
+        <span className="hidden xl:inline truncate">{label}</span>
       </Button>
     )
   }
@@ -143,7 +147,7 @@ export default function HorizontalMenu({ className, logo, extra }: HorizontalMen
   const defaultLogo = (
     <div className="flex items-center gap-2">
       <HiOutlineMenuAlt2 className="text-2xl text-primary" />
-      <span className="font-semibold text-lg">知识库后台</span>
+      <span className="font-semibold text-lg">{t('menu.admin')}</span>
     </div>
   )
 

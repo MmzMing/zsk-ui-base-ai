@@ -10,57 +10,59 @@ import {
   HiOutlineChartBar
 } from 'react-icons/hi'
 
-// 统计卡片数据
-const stats = [
-  {
-    title: '文章总数',
-    value: '128',
-    icon: HiOutlineDocumentText,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-50 dark:bg-blue-950'
-  },
-  {
-    title: '用户数量',
-    value: '1,234',
-    icon: HiOutlineUserGroup,
-    color: 'text-green-500',
-    bgColor: 'bg-green-50 dark:bg-green-950'
-  },
-  {
-    title: '今日访问',
-    value: '5,678',
-    icon: HiOutlineEye,
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-50 dark:bg-purple-950'
-  },
-  {
-    title: '评论数量',
-    value: '892',
-    icon: HiOutlineChartBar,
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-50 dark:bg-orange-950'
-  }
-]
-
-// 快捷操作
-const quickActions = [
-  { title: '写文章', description: '创建新的文章', path: '/admin/content/articles/create' },
-  { title: '用户管理', description: '管理用户权限', path: '/admin/user/users' },
-  { title: '系统设置', description: '配置系统参数', path: '/admin/system/general' },
-  { title: '数据分析', description: '查看统计报表', path: '/admin/analysis' }
-]
-
 import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { useTranslation } from 'react-i18next'
 
 export default function Dashboard() {
   const { isMobile } = useBreakpoint()
+  const { t, i18n } = useTranslation('dashboard')
+
+  // 统计卡片数据
+  const stats = [
+    {
+      title: t('stats.articles'),
+      value: '128',
+      icon: HiOutlineDocumentText,
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-50 dark:bg-blue-950'
+    },
+    {
+      title: t('stats.users'),
+      value: '1,234',
+      icon: HiOutlineUserGroup,
+      color: 'text-green-500',
+      bgColor: 'bg-green-50 dark:bg-green-950'
+    },
+    {
+      title: t('stats.visits'),
+      value: '5,678',
+      icon: HiOutlineEye,
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-50 dark:bg-purple-950'
+    },
+    {
+      title: t('stats.comments'),
+      value: '892',
+      icon: HiOutlineChartBar,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-50 dark:bg-orange-950'
+    }
+  ]
+
+  // 快捷操作
+  const quickActions = [
+    { title: t('quickActions.writeArticle'), description: t('quickActions.writeArticleDesc'), path: '/admin/content/articles/create' },
+    { title: t('quickActions.manageUsers'), description: t('quickActions.manageUsersDesc'), path: '/admin/user/users' },
+    { title: t('quickActions.systemSettings'), description: t('quickActions.systemSettingsDesc'), path: '/admin/system/general' },
+    { title: t('quickActions.dataAnalysis'), description: t('quickActions.dataAnalysisDesc'), path: '/admin/analysis' }
+  ]
 
   return (
     <div className={isMobile ? 'p-3' : 'p-4 md:p-6'}>
       {/* 页面标题 */}
       <div className="mb-6">
-        <h1 className="text-xl md:text-2xl font-bold text-default-900">仪表盘</h1>
-        <p className="text-default-500 mt-1">欢迎回来，今天是 {new Date().toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <h1 className="text-xl md:text-2xl font-bold text-default-900">{t('title')}</h1>
+        <p className="text-default-500 mt-1">{t('welcome', { date: new Date().toLocaleDateString(i18n.language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) })}</p>
       </div>
 
       {/* 统计卡片 */}
@@ -83,7 +85,7 @@ export default function Dashboard() {
       {/* 快捷操作 */}
       <Card className="admin-card mb-6">
         <CardHeader className="px-4 md:px-6 py-3 md:py-4 border-b border-divider">
-          <h2 className="text-lg font-semibold">快捷操作</h2>
+          <h2 className="text-lg font-semibold">{t('quickActions.title')}</h2>
         </CardHeader>
         <CardBody className="p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -107,7 +109,7 @@ export default function Dashboard() {
         {/* 最新文章 */}
         <Card className="admin-card">
           <CardHeader className="px-4 md:px-6 py-3 md:py-4 border-b border-divider">
-            <h2 className="text-lg font-semibold">最新文章</h2>
+            <h2 className="text-lg font-semibold">{t('latestArticles.title')}</h2>
           </CardHeader>
           <CardBody className="p-0">
             <div className="divide-y divide-divider">
@@ -117,7 +119,7 @@ export default function Dashboard() {
                     示例文章标题 {i} - 如何使用 React 构建现代化应用
                   </h3>
                   <p className="text-xs text-default-400 mt-1">
-                    {new Date(Date.now() - i * 3600000).toLocaleString('zh-CN')}
+                    {new Date(Date.now() - i * 3600000).toLocaleString(i18n.language)}
                   </p>
                 </div>
               ))}
@@ -128,7 +130,7 @@ export default function Dashboard() {
         {/* 最新评论 */}
         <Card className="admin-card">
           <CardHeader className="px-4 md:px-6 py-3 md:py-4 border-b border-divider">
-            <h2 className="text-lg font-semibold">最新评论</h2>
+            <h2 className="text-lg font-semibold">{t('latestComments.title')}</h2>
           </CardHeader>
           <CardBody className="p-0">
             <div className="divide-y divide-divider">
@@ -143,7 +145,7 @@ export default function Dashboard() {
                         这是一段示例评论内容，非常精彩的文章！
                       </p>
                       <p className="text-xs text-default-400">
-                        用户{i} · {new Date(Date.now() - i * 7200000).toLocaleString('zh-CN')}
+                        用户{i} · {new Date(Date.now() - i * 7200000).toLocaleString(i18n.language)}
                       </p>
                     </div>
                   </div>
